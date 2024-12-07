@@ -1,6 +1,13 @@
+
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import DialogProvider from "@/providers/modal-provider";
+import StoreModal from "@/components/modals/store-modal";
+import prismadb from "@/lib/prismadb";
+import { Toaster } from "@/components/ui/sonner";
+import { ClerkProvider } from "@clerk/nextjs";
+
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -23,13 +30,24 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
+  // ignore error
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const store = prismadb;
+
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en">
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        >
+            <DialogProvider>
+              <StoreModal />
+            </DialogProvider>
+            {children}
+            <Toaster />
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
