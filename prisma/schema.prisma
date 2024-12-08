@@ -21,6 +21,10 @@ model Store {
   userId    String
   billboards Billboard[] @relation("StoreToBillboard")
   categories Category[] @relation("StoreToBillboard")
+  sizes     Size[] @relation("StoreToSize")
+  colors    Color[] @relation("StoreToColor")
+
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -53,3 +57,45 @@ model Category {
   @@index([storeId])
   @@index([billboardId])
 }
+
+model Size {
+  id       String   @id @default(uuid())
+  storeId  String
+  store    Store    @relation("StoreToSize", fields: [storeId], references: [id])
+  name     String
+  value    String
+  // products Product[] @relation("SizeToProduct")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+
+  @@index([storeId])
+}
+
+model Color {
+  id        String   @id @default(uuid())
+  storeId   String
+  store     Store    @relation("StoreToColor", fields: [storeId], references: [id])
+  name      String
+  value     String   // Hex code, e.g., #FFFFFF
+  // products  Product[] @relation("ColorToProduct")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([storeId])
+}
+
+// model Product {
+//   id        String   @id @default(uuid())
+//   sizeId    String
+//   size      Size     @relation("SizeToProduct", fields: [sizeId], references: [id])
+//   name      String
+//   price     Float
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+// storeId   String
+// store     Store    @relation("StoreToSize", fields: [storeId], references: [id])
+  // @@index([sizeId])
+// }

@@ -4,50 +4,50 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
     req: NextRequest,
-    { params }: { params: { billboardId: string } }
+    { params }: { params: { categoryId: string } }
 ) {
     try {
-        const { billboardId } = params;
+        const { categoryId } = await params;
 
 
-        const billboard = await prismadb.billboard.findUnique({
+        const category = await prismadb.category.findUnique({
             where: {
-                id: billboardId,
+                id: categoryId,
             }
         });
 
-        return NextResponse.json(billboard);
+        return NextResponse.json(category);
         
     } catch (error) {
-        console.log("[BILLBOARD_GET_ERROR]", error);
+        console.log("[CATEGORY_GET_ERROR]", error);
         return new NextResponse("Internal Server Error", { status: 500 });
     }
 }
 
 export async function PATCH(
     req: NextRequest,
-    { params }: { params: { billboardId: string ; storeId:string} }
+    { params }: { params: { categoryId: string ; storeId:string} }
 ) {
     try {
         const { userId } = await auth();
         const body = await req.json();
-        const {label, imageUrl} = body;
-        const { billboardId,storeId } = await params;
+        const {name, billboardId} = body;
+        const { categoryId,storeId } = await params;
 
         if (!userId) {
             return new NextResponse("Unauthorized", { status: 401 });
         }
 
-        if (!label) {
+        if (!name) {
             return new NextResponse("Missing name", { status: 400 });
         }
 
-        if (!imageUrl) {
+        if (!billboardId) {
             return new NextResponse("Missing imageUrl", { status: 400 });
         }
 
-        if (!billboardId) {
-            return new NextResponse("Store ID is required", { status: 400 });
+        if (!categoryId) {
+            return new NextResponse("CATEGORY ID is required", { status: 400 });
         }
 
         const storeByUserId = await prismadb.store.findFirst({
@@ -62,38 +62,38 @@ export async function PATCH(
         }
 
 
-        const billboard = await prismadb.billboard.updateMany({
+        const category = await prismadb.category.updateMany({
             where: {
-                id: billboardId,
+                id: categoryId,
             },
             data: {
-                label,
-                imageUrl
+                name,
+                billboardId
             }
         });
 
-        return NextResponse.json(billboard);
+        return NextResponse.json(category);
         
     } catch (error) {
-        console.log("[BILLBOARD_PATCH_ERROR]", error);
+        console.log("[CATEGORY_PATCH_ERROR]", error);
         return new NextResponse("Internal Server Error", { status: 500 });
     }
 }
 
 export async function DELETE(
     req:NextRequest,
-{ params }: { params:   { billboardId: string ; storeId:string} }
+{ params }: { params:   { categoryId: string ; storeId:string} }
 ) {
     try {
         const { userId } = await auth();
 
-        const { billboardId, storeId } = await params;
+        const { categoryId, storeId } = await params;
 
         if (!userId) {
             return new NextResponse("Unauthorized", { status: 401 });
         }
 
-        if (!billboardId) {
+        if (!categoryId) {
             return new NextResponse("Store ID is required", { status: 400 });
         }
 
@@ -108,17 +108,17 @@ export async function DELETE(
             return new NextResponse("Store not found, Unauthorized", { status: 404 });
         }
 
-        const billboard = await prismadb.billboard.deleteMany({
+        const category = await prismadb.category.deleteMany({
             where: {
-                id: billboardId,
+                id: categoryId,
             }
         });
 
-        return NextResponse.json(billboard);
+        return NextResponse.json(category);
         
     }
     catch (error) {
-        console.log("[BILLBOARD_DELETE_ERROR]", error);
+        console.log("[category_DELETE_ERROR]", error);
         return new NextResponse("Internal Server Error", { status: 500 });
     }
 
