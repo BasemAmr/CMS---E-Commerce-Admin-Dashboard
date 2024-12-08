@@ -102,7 +102,7 @@ const SizesActions = ({ id }: { id: string }) => {
 export const sizesCols: ColumnDef<Size>[] = [
   {
     accessorKey: "name",
-    header: "Label",
+    header: "Name",
   },
   {
     accessorKey: "value",
