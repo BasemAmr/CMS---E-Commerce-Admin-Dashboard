@@ -1,7 +1,7 @@
 import prismadb from '@/lib/prismadb';
 import React from 'react';
 import { Separator } from '@radix-ui/react-separator';
-import ColorClient from './components/colors/client';
+import ColorClient from './components/client';
 import { ApiList } from '@/components/ui/api-alert';
 
 interface ColorsProps {
@@ -11,7 +11,7 @@ interface ColorsProps {
 }
 
 const ColorsPage = async ({ params }: ColorsProps) => {
-    const { storeId } = params;
+    const { storeId } = await params;
     const colors = await prismadb.color.findMany({
         where: {
             storeId

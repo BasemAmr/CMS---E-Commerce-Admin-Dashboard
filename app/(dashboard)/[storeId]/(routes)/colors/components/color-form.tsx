@@ -22,7 +22,8 @@ import {
 import { Input } from '@/components/ui/input';
 import AlertModal from '@/components/modals/alert-modal';
 import { Trash } from 'lucide-react';
-import { ChromePicker } from 'react-color'; 
+import { ChromePicker } from  '@/components/ChromePicker';
+import { Color } from '@prisma/client';
 
 const formSchema = z.object({
   name: z.string().nonempty("Name is required"),
@@ -141,6 +142,7 @@ const ColorForm = ({ initialData, storeId }: ColorFormProps) => {
                   <FormControl>
                     <ChromePicker
                       color={field.value}
+                      onChange={(color) => field.onChange(color.hex)}
                       onChangeComplete={(color) => field.onChange(color.hex)}
                     />
                   </FormControl>

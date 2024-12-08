@@ -16,7 +16,7 @@ export async function POST(
     const { userId } = await auth();
     const body = await req.json();
     const { name, value } = colorSchema.parse(body);
-    const { storeId } = params;
+    const { storeId } = await params;
 
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
