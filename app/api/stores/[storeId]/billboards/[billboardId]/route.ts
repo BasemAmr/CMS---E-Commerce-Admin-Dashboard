@@ -7,7 +7,7 @@ export async function GET(
     { params }: { params: { billboardId: string } }
 ) {
     try {
-        const { billboardId } = params;
+        const { billboardId } = await params;
 
 
         const billboard = await prismadb.billboard.findUnique({

@@ -1,124 +1,132 @@
 "use client";
 
-import React, { useState } from 'react';
-import { IKUpload } from "imagekitio-next";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Trash } from 'lucide-react';
+import { Trash } from "lucide-react";
 import { toast } from "sonner";
-import Image from 'next/image';
+import Image from "next/image";
+import FileUpload from "../FileUpload";
 
 interface ImageUploadProps {
-  onSuccess: (url: string) => void;
-  onRemove: () => void;
-  existingImageUrl?: string;
+  onSuccess: (urls: string[]) => void; // Pass the updated array of image URLs
+  onRemove: (urls: string[]) => void; // Pass the updated array when an image is removed
+  existingImages?: string[]; // Array of existing image URLs
   setFormLoading: (loading: boolean) => void;
+  multiple?: boolean; // Flag to allow single or multiple upload
 }
 
-const ImageUpload: React.FC<ImageUploadProps> = ({ onSuccess, onRemove, existingImageUrl, setFormLoading }) => {
+const ImageUpload: React.FC<ImageUploadProps> = ({
+  onSuccess,
+  onRemove,
+  existingImages = [],
+  setFormLoading,
+  multiple = true, // Default to multiple uploads
+}) => {
   const [loading, setLoading] = useState(false);
-  const [imageUrl, setImageUrl] = useState(existingImageUrl || '');
+  const [imageUrls, setImageUrls] = useState<string[]>(existingImages);
+
+  // Handle successful upload
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleSuccess = (res: any) => {
     setLoading(false);
-    setImageUrl(res.url);
-    onSuccess(res.url);
     setFormLoading(false);
-    toast.success('Image uploaded successfully');
+
+    console.log(res);
+    const newUrl = res;
+
+    console.log(multiple);
+
+    console.log(imageUrls);
+
+    const updatedUrls = multiple ? [...imageUrls, ...newUrl] : [newUrl];
+
+    setImageUrls(updatedUrls);
+
+    onSuccess(updatedUrls);
+
+    console.log(updatedUrls);
+    toast.success("Image uploaded successfully");
   };
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // Handle upload error
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleError = (err: any) => {
     setLoading(false);
     setFormLoading(false);
-    toast.error('Image upload failed');
-    if (existingImageUrl) {
-      setImageUrl(existingImageUrl);
-    }
+    toast.error("Image upload failed");
     console.error(err);
   };
 
   const handleUploadStart = () => {
     setLoading(true);
     setFormLoading(true);
-    
   };
 
-  const handleRemove = () => {
-    setImageUrl('');
-    onRemove();
+  // Remove an image from the list
+  const handleRemove = (url: string) => {
+    const updatedUrls = imageUrls.filter((image) => image !== url);
+    setImageUrls(updatedUrls);
+    onRemove(updatedUrls);
   };
-
-  const handleReset = () => {
-    if (imageUrl === existingImageUrl) {
-      toast.info('Image already reset');
-      return;
-    }
-
-    setImageUrl(existingImageUrl || '');
-  }
 
   return (
-    <div className="flex flex-col items-center space-y-4">
-      {imageUrl ? (
-        <div className="relative">
-          <div className='
-              relative w-40 h-40 bg-gray-200 rounded border border-gray-200 flex items-center justify-center overflow-hidden
-          '>
-
-          <Image 
-            src={imageUrl} 
-            alt="Uploaded Image" 
-            fill
-            className="object-cover rounded border border-gray-200"
-            sizes='(max-width: 640px) 100vw, 640px'
-          />
+    <div className="flex flex-col space-y-4">
+      {/* Display uploaded images */}
+      <div className="grid grid-cols-3 gap-4">
+        {imageUrls.map((url, index) => (
+          <div key={index} className="relative group">
+            <div className="relative w-40 h-40 bg-gray-200 rounded border border-gray-200 flex items-center justify-center overflow-hidden">
+              <Image
+                src={url}
+                alt={`Uploaded Image ${index + 1}`}
+                fill
+                className="object-cover rounded"
+                sizes="(max-width: 640px) 100vw, 640px"
+              />
             </div>
-          <Button
-            variant="destructive"
-            size="icon"
-            className="absolute top-2 right-2"
-            onClick={handleRemove}
-          >
-            <Trash className="h-4 w-4" />
-          </Button>
-        </div>
-      ) : null}
-      <Button 
-        variant="outline" 
-        onClick={() => document.getElementById('ik-upload-input')?.click()}
+            <Button
+              variant="destructive"
+              size="icon"
+              className="absolute top-2 right-2"
+              onClick={() => handleRemove(url)}
+              type="button"
+            >
+              <Trash className="h-4 w-4" />
+            </Button>
+          </div>
+        ))}
+      </div>
+
+      {/* Upload Button */}
+      <Button
+        variant="outline"
+        onClick={() => document.getElementById("ik-upload-input")?.click()}
         disabled={loading}
-        type='button'
+        type="button"
       >
-        {loading ? 'Uploading...' : 'Upload Image'}
+        {loading ? "Uploading..." : "Upload Image"}
       </Button>
-      {
-        existingImageUrl && (
-          <Button 
-            variant="outline"
-            onClick={handleReset}
-            disabled={
-              loading
-             }
-            type='button'
-          >
-            Reset Previous Image
-          </Button>
-        )
-      }
-      <IKUpload
-        fileName="billboard-upload.jpg"
+
+      {/* Hidden FileUpload input */}
+      <FileUpload
         onError={handleError}
         onSuccess={handleSuccess}
         onUploadStart={handleUploadStart}
-        style={{ display: 'none' }}
+        style={{ display: "none" }}
         id="ik-upload-input"
-        accept='image/*'
-        // max file size 10 MB in bytes
-        validateFile={(file) => file.size <  10 * 1024 * 1024}
-
+        accept="image/*"
+        validateFile={(file) => file.size < 10 * 1024 * 1024} // 10 MB max size
+        multiple={multiple}
       />
 
+      {/* Message for empty state */}
+      {!imageUrls.length && (
+        <p className="text-sm text-gray-500">
+          No images uploaded yet. Images must be less than 10MB.
+        </p>
+      )}
     </div>
   );
 };

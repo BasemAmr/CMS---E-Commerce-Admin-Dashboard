@@ -1,8 +1,6 @@
 import React from 'react';
 import { Separator } from '@radix-ui/react-separator';
 import ColorForm from '../components/color-form';
-import prismadb from '@/lib/prismadb';
-import { Color } from '@prisma/client';
 
 interface ColorsNewPageProps {
     params: {
@@ -11,9 +9,8 @@ interface ColorsNewPageProps {
 }
 
 const ColorsNewPage = async ({ params }: ColorsNewPageProps) => {
-    const { storeId } = params;
+    const { storeId } = await params;
 
-    // Optionally, verify store existence here
 
     return (
         <div className="flex-col">

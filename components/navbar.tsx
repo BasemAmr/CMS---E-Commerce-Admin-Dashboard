@@ -1,7 +1,7 @@
 "use client";
 
 import { UserButton } from '@clerk/nextjs'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Check, ChevronsUpDown, PlusCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -36,6 +36,7 @@ const Navbar: React.FC<NavbarProps> = ({
   const router = useRouter();
 
   const [open, setOpen] = React.useState(false);
+  const [isMounted, setIsMounted] = React.useState(false);
 
   const formattedItems = stores.map((store) => ({
     label: store.name,
@@ -48,6 +49,20 @@ const Navbar: React.FC<NavbarProps> = ({
     setOpen(false);
     router.push(`/${store.value}`);
   };
+
+  const renderUserButton = () => {
+    
+  if (isMounted) {
+    return <UserButton afterSignOutUrl="/" />;
+  }
+    
+  }
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  
 
   return (
     <div className="border-b">
@@ -110,7 +125,7 @@ const Navbar: React.FC<NavbarProps> = ({
         </Popover>
         <MainNav />
         <div className="ml-auto flex items-center space-x-4">
-          <UserButton afterSignOutUrl="/" />
+          {renderUserButton()}
         </div>
       </div>
     </div>

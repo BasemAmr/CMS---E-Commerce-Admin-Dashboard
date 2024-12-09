@@ -40,7 +40,7 @@ const ProductClient = (
                 </Button>
             </div>
             <div className="w-full h-auto ">
-                <DataTable columns={productsCols} data={products} searchKey={"label"} />
+                <DataTable columns={productsCols} data={products} searchKey={"name"} />
             </div> 
 
         </div>

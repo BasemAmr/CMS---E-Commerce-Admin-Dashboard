@@ -25,6 +25,8 @@ model Store {
   colors    Color[] @relation("StoreToColor")
   products  Product[] @relation("StoreToSize")
 
+  orders    Order[] @relation("StoreToOrder")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -65,6 +67,8 @@ model Size {
   store    Store    @relation("StoreToSize", fields: [storeId], references: [id])
   name     String
   value    String
+
+  
   products Product[]
 
   createdAt DateTime @default(now())
@@ -80,7 +84,9 @@ model Color {
   store     Store    @relation("StoreToColor", fields: [storeId], references: [id])
   name      String
   value     String   // Hex code, e.g., #FFFFFF
-  products  Product[] 
+  
+  products Product[] 
+
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -88,28 +94,37 @@ model Color {
   @@index([storeId])
 }
 
+
+// each product can have several sizes, colors just like images but one category 
 model Product {
   id        String   @id @default(uuid())
-  sizeId    String
-  size      Size     @relation(fields: [sizeId], references: [id])
   name      String
   price     Float
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  
+  
+
   storeId   String
   store     Store    @relation("StoreToSize", fields: [storeId], references: [id])
+  
   categoryId String
   category   Category @relation("CategoryToProduct", fields: [categoryId], references: [id])
-  colorId    String
-  color      Color    @relation(fields: [colorId], references: [id])
+  
+  sizes     Size[]
+  colors    Color[]
+
   images     Image[]
+
   isFeatured Boolean @default(false)
   isArchived Boolean @default(false)
   
+  orderItems OrderItem[]
+
+  
+
   @@index([storeId])
   @@index([categoryId])
-  @@index([colorId])
-  @@index([sizeId])
 }
 
 model Image {
@@ -120,5 +135,33 @@ model Image {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([productId])
+}
+
+model Order {
+  id        String   @id @default(uuid())
+  storeId   String
+  store    Store    @relation("StoreToOrder", fields: [storeId], references: [id])
+  orderItems OrderItem[] 
+  isPaid    Boolean  @default(false)
+  phone     String
+  address   String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([storeId])
+}
+
+model OrderItem {
+  id        String   @id @default(uuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id])
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([orderId])
   @@index([productId])
 }

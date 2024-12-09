@@ -38,6 +38,11 @@ const MainNav = () => {
             active: pathname === `/${storeId}/products`
         },
         {
+            name: "Orders",
+            href: `/${storeId}/orders`,
+            active: pathname === `/${storeId}/orders`
+        },
+        {
             name: "Settings",
             href: `/${storeId}/settings`,
             active: pathname === `/${storeId}/settings`

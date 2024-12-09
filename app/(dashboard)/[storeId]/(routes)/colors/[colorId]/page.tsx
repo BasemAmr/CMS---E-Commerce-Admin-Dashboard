@@ -2,7 +2,6 @@ import prismadb from '@/lib/prismadb';
 import React from 'react';
 import { Separator } from '@radix-ui/react-separator';
 import ColorForm from '../components/color-form';
-import { Color } from '@prisma/client';
 
 interface ColorsEditPageProps {
     params: {
@@ -12,7 +11,7 @@ interface ColorsEditPageProps {
 }
 
 const ColorsEditPage = async ({ params }: ColorsEditPageProps) => {
-    const { colorId, storeId } = params;
+    const { colorId, storeId } = await params;
 
     const color = await prismadb.color.findFirst({
         where: {

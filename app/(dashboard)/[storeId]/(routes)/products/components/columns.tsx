@@ -2,7 +2,7 @@
 
 import { ColumnDef } from "@tanstack/react-table"
 
-import {  Category, Color, Product, Size } from "@prisma/client"
+import {  Category, Color, Product, Size, Image } from "@prisma/client"
 // import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Copy, Pen, Trash } from "lucide-react"
@@ -34,12 +34,12 @@ const ProductActions = ({ id }: { id: string }) => {
     const onDelete = async () => {
       try {
         setLoading(true);
-        await axios.delete(`/api/stores/${storeId}/billboards/${id}`);
-        toast.success('Billboard deleted successfully');
-        router.push(`/${storeId}/billboards`);
+        await axios.delete(`/api/stores/${storeId}/products/${id}`);
+        toast.success('Product deleted successfully');
+        router.push(`/${storeId}/products`);
       } catch (error) {
         console.error(error);
-        toast.error('Failed to delete billboard');
+        toast.error('Failed to delete product');
       } finally {
         setLoading(false);
         setAlertOpen(false);
@@ -62,13 +62,13 @@ const ProductActions = ({ id }: { id: string }) => {
         }
         loading={loading}
         title="Are you sure?"
-        description="Are you sure you want to delete this Billboard?"
+        description="Are you sure you want to delete this product?"
       />
       <Button
         variant="ghost"
         onClick={() => {
           // navigate to edit page
-          router.push(`billboards/${id}`)
+          router.push(`products/${id}`)
         }}
         size="icon"
       >
@@ -79,7 +79,7 @@ const ProductActions = ({ id }: { id: string }) => {
         variant="ghost"
         onClick={() => {
           navigator.clipboard.writeText(id)
-          toast.success("Billboard ID Copied to clipboard")
+          toast.success("Product ID Copied to clipboard")
         }}
         size="icon"
       >
@@ -101,59 +101,77 @@ const ProductActions = ({ id }: { id: string }) => {
 
 export type ProductCols = 
 ({
-  color: {
+  colors: {
     [key in keyof Color]: Color[key]
-  },
-  size: {
+  }[],
+  sizes: {
     [key in keyof Size]: Size[key]
-  },
+  }[],
   category: {
     [key in keyof Category]: Category[key]
   },
+  images: {
+    [key in keyof Image]: Image[key]
+  }[]
 }
 & {
   [key in keyof Product]: Product[key]
-})
+});
 
 
 export const productsCols: ColumnDef<ProductCols>[] = [
   {
     accessorKey: "name",
     header: "Name",
+    cell: ({ row }) => {
+      const color = row.original.isFeatured ? "text-green-500" : row.original.isArchived ? "text-gray-500" : "text-black";
+      return <span className={color}>{row.original.name}</span>;
+    },
   },
   {
     accessorKey: "price",
     header: "Price",
-    // format price
-    cell: ({row}) => {
-      return `$${(row.original.price).toFixed(2)}`
-    }
+    cell: ({ row }) => {
+      const color = row.original.isFeatured ? "text-green-500" : row.original.isArchived ? "text-gray-500" : "text-black";
+      return <span className={color}>${(row.original.price).toFixed(2)}</span>;
+    },
   },
   {
     accessorKey: "category",
     header: "Category",
-    cell: ({row}) => {
-      return row.original.category.name
-    }
+    cell: ({ row }) => {
+      const color = row.original.isFeatured ? "text-green-500" : row.original.isArchived ? "text-gray-500" : "text-black";
+      return <span className={color}>{row.original.category.name}</span>;
+    },
   },
   {
     accessorKey: "size",
     header: "Size",
-    cell: ({row}) => {
-      return row.original.size.name
-    }
+    cell: ({ row }) => {
+      const color = row.original.isFeatured ? "text-green-500" : row.original.isArchived ? "text-gray-500" : "text-black";
+      return <span className={color}>{row.original.sizes.map((size) => size.name).join(", ")}</span>;
+    },
   },
   {
     accessorKey: "color",
     header: "Color",
-    cell: ({row}) => {
-      return row.original.color.name
-    }
+    cell: ({ row }) => {
+      const color = row.original.isFeatured ? "text-green-500" : row.original.isArchived ? "text-gray-500" : "text-black";
+      return row.original.colors.map((colorItem) => (
+        <div key={colorItem.id} className={`flex items-center space-x-2 ${color}`}>
+          <span
+            className="w-6 h-6 rounded-full border"
+            style={{ backgroundColor: colorItem.value }}
+          ></span>
+          <span>{colorItem.value}</span>
+        </div>
+      ));
+    },
   },
   {
     id: "actions",
-    cell: ({row}) => {
-      return <ProductActions id={row.original.id} />
-    }
-  }
-]
+    cell: ({ row }) => {
+      return <ProductActions id={row.original.id} />;
+    },
+  },
+];

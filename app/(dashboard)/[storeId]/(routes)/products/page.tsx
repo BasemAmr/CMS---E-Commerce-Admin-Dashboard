@@ -17,8 +17,9 @@ const ProductsPage = async ({ params }: ProductsPageProps) => {
         },
         include : {
             category: true,
-            size : true,
-            color: true
+            sizes : true,
+            colors: true,
+            images: true
         }
     });
     

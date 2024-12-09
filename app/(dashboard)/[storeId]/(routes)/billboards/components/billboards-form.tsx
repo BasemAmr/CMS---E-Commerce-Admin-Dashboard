@@ -51,8 +51,8 @@ const BillboardForm = ({ initialData, storeId }: BillboardFormProps) => {
     },
   });
 
-  const handleImageSuccess = (url: string) => {
-    form.setValue('imageUrl', url);
+  const handleImageSuccess = (urls: string[]) => {
+    form.setValue('imageUrl', urls[0]);
   };
 
   const handleImageRemove = () => {
@@ -170,14 +170,17 @@ const BillboardForm = ({ initialData, storeId }: BillboardFormProps) => {
                   <FormItem>
                     <FormLabel>Image</FormLabel>
                     <FormControl>
-                      <ImageUpload
-                        onSuccess={handleImageSuccess}
-                        onRemove={handleImageRemove}
-                        existingImageUrl={initialData?.imageUrl}
-                        setFormLoading={
-                            setLoading
-                        }
-                      />
+                    <ImageUpload
+                      onSuccess={handleImageSuccess} 
+                      onRemove={handleImageRemove}
+                      existingImages={
+                        form.getValues('imageUrl') ? [form.getValues('imageUrl')]: []
+                      } 
+                      setFormLoading={
+                        setLoading
+                      }
+                      multiple={false} 
+                    />
                     </FormControl>
                     <FormMessage  />
                     {
