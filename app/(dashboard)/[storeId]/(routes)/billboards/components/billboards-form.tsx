@@ -52,7 +52,7 @@ const BillboardForm = ({ initialData, storeId }: BillboardFormProps) => {
   });
 
   const handleImageSuccess = (urls: string[]) => {
-    form.setValue('imageUrl', urls[0]);
+    form.setValue('imageUrl', urls[0][0]);
   };
 
   const handleImageRemove = () => {
@@ -183,15 +183,6 @@ const BillboardForm = ({ initialData, storeId }: BillboardFormProps) => {
                     />
                     </FormControl>
                     <FormMessage  />
-                    {
-                        !form.getValues('imageUrl') && (
-                            <p 
-                                className="text-sm text-gray-500"
-                            >
-                                Image will not be uploaded if more than 10MB
-                            </p>
-                        )
-                    }
                   </FormItem>
                 )}
               />
