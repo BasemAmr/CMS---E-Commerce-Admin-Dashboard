@@ -39,7 +39,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
 
     console.log(imageUrls);
 
-    const updatedUrls = multiple ? [...imageUrls, ...newUrl] : [newUrl];
+    const updatedUrls = multiple ? [...imageUrls, ...newUrl] : [...newUrl];
 
     setImageUrls(updatedUrls);
 
@@ -81,7 +81,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
           <div key={index} className="relative group">
             <div className="relative w-40 h-40 bg-gray-200 rounded border border-gray-200 flex items-center justify-center overflow-hidden">
               <Image
-                src={!multiple ? url[index] : url}
+                src={url}
                 alt={`Uploaded Image ${index + 1}`}
                 fill
                 className="object-cover rounded"

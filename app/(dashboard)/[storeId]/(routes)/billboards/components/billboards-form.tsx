@@ -52,7 +52,7 @@ const BillboardForm = ({ initialData, storeId }: BillboardFormProps) => {
   });
 
   const handleImageSuccess = (urls: string[]) => {
-    form.setValue('imageUrl', urls[0][0]);
+    form.setValue('imageUrl', urls[0]);
   };
 
   const handleImageRemove = () => {
