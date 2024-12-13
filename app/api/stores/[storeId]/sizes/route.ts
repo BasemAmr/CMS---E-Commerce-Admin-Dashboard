@@ -12,7 +12,7 @@ export async function POST(
 
     const body = await req.json();
     const { name, value } = body;
-    const { storeId } = params;
+    const { storeId } = await params;
 
     console.log("Request Body:", body);
     console.log("Store ID:", storeId);
@@ -72,7 +72,7 @@ export async function GET(
   { params }: { params: { storeId: string } }
 ) {
   try {
-    const { storeId } = params;
+    const { storeId } = await params;
     console.log("Store ID:", storeId);
 
     if (!storeId) {

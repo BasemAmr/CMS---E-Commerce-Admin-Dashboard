@@ -7,7 +7,7 @@ export async function GET(
   { params }: { params: { sizeId: string; storeId: string } }
 ) {
   try {
-    const { sizeId, storeId } = params;
+    const { sizeId, storeId } = await params;
     console.log("Store ID:", storeId);
     console.log("Size ID:", sizeId);
 
@@ -54,7 +54,7 @@ export async function PATCH(
     const { userId } = await auth();
     const body = await req.json();
     const { name, value } = body;
-    const { sizeId, storeId } = params;
+    const { sizeId, storeId } = await params;
 
     console.log("User ID:", userId);
     console.log("Request Body:", body);
@@ -142,7 +142,7 @@ export async function DELETE(
 ) {
   try {
     const { userId } = await auth();
-    const { sizeId, storeId } = params;
+    const { sizeId, storeId } = await params;
 
     console.log("User ID:", userId);
     console.log("Store ID:", storeId);

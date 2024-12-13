@@ -61,7 +61,7 @@ export async function GET(
   { params }: { params: { storeId: string } }
 ) {
   try {
-    const { storeId } = params;
+    const { storeId } = await params;
 
     if (!storeId) {
       return new NextResponse("Missing storeId", { status: 400 });

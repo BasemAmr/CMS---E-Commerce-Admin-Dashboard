@@ -15,7 +15,7 @@ export async function GET(
   { params }: { params: { colorId: string; storeId: string } }
 ) {
   try {
-    const { colorId, storeId } = params;
+    const { colorId, storeId } = await params;
 
     if (!colorId) {
       return new NextResponse("Missing colorId", { status: 400 });
@@ -55,7 +55,7 @@ export async function PATCH(
     const { userId } = await auth();
     const body = await req.json();
     const { name, value } = colorSchema.parse(body);
-    const { colorId, storeId } = params;
+    const { colorId, storeId } = await params;
 
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
@@ -121,7 +121,7 @@ export async function DELETE(
 ) {
   try {
     const { userId } = await auth();
-    const { colorId, storeId } = params;
+    const { colorId, storeId } = await params;
 
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });

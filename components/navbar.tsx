@@ -43,7 +43,7 @@ const Navbar: React.FC<NavbarProps> = ({
     value: store.id
   }));
 
-  const currentStore = formattedItems.find((item) => item.value === params.storeId);
+  const currentStore = formattedItems.find((item) => item.value ===  params.storeId);
 
   const onStoreSelect = (store: { value: string, label: string }) => {
     setOpen(false);
