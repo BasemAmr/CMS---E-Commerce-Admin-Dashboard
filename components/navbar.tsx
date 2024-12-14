@@ -1,7 +1,7 @@
 "use client";
 
 import { UserButton } from '@clerk/nextjs'
-import React, { useEffect } from 'react'
+import React, { Suspense, useEffect } from 'react'
 import { Check, ChevronsUpDown, PlusCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -123,7 +123,9 @@ const Navbar: React.FC<NavbarProps> = ({
             </Command>
           </PopoverContent>
         </Popover>
+        <Suspense fallback={<>Loading...</>}>
         <MainNav />
+      </Suspense>
         <div className="ml-auto flex items-center space-x-4">
           {renderUserButton()}
         </div>
