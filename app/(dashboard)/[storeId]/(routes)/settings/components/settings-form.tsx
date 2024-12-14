@@ -161,7 +161,7 @@ const SettingsForm = ({
       <Separator className="my-4" />
       <ApiAlert 
         title='NEXT_PUBLIC_API_URL'
-        description={`${origin}/api/${params.storeId}`}
+        description={`${origin}/api/stores/${params.storeId}`}
         variant='public'
       />
 
