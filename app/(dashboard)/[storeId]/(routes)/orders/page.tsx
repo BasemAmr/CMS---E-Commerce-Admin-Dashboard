@@ -28,7 +28,7 @@ const formattedOrders: OrdersCols[] = orders.map(order => {
         id: order.id,
         phone: order.phone,
         address: order.address,
-        totalPrice: `$${(order.orderItems.reduce((acc, item) => acc + item.product.price, 0)).toFixed(2)}`,
+        totalPrice: `EGP ${(order.orderItems.reduce((acc, item) => acc + item.product.price, 0)).toFixed(2)}`,
         products: order.orderItems.map(item => item.product.name).join(", "),
         isPaid: order.isPaid,
         createdAt: order.createdAt,

@@ -133,7 +133,7 @@ export const productsCols: ColumnDef<ProductCols>[] = [
     header: "Price",
     cell: ({ row }) => {
       const color = row.original.isFeatured ? "text-green-500" : row.original.isArchived ? "text-gray-500" : "text-black";
-      return <span className={color}>${(row.original.price).toFixed(2)}</span>;
+      return <span className={color}>EGP{(row.original.price).toFixed(2)}</span>;
     },
   },
   {
