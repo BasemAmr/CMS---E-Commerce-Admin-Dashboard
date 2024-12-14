@@ -42,7 +42,7 @@ export async function PATCH(
 
 export async function DELETE(
     req:NextRequest,
-    { params }: { params: { storeId: string } }
+    { params }: { params: Promise<{ storeId: string }> }
 ) {
     try {
         const { userId } = await auth();
