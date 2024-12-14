@@ -6,9 +6,9 @@ import prismadb from '@/lib/prismadb';
 import SettingsForm from './components/settings-form';
 
 interface SettingsProps {
-    params : {
+    params : Promise<{
         storeId: string;
-    }
+    }>
 }
 
 const Settings = async (

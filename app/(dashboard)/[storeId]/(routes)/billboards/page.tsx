@@ -4,9 +4,9 @@ import { ApiList } from '@/components/ui/api-alert';
 import prismadb from '@/lib/prismadb';
 
 interface BillboardFormProps {
-    params: {
+    params: Promise<{
         storeId: string;
-    };
+    }>;
 }
 
 const BillboardsPage = async ({ params }: BillboardFormProps) => {

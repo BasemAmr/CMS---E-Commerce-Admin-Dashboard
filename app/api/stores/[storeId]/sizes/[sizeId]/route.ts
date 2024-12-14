@@ -4,7 +4,7 @@ import { NextResponse, NextRequest } from "next/server";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { sizeId: string; storeId: string } }
+  { params }: { params: Promise<{ sizeId: string; storeId: string }> }
 ) {
   try {
     const { sizeId, storeId } = await params;
@@ -48,7 +48,7 @@ export async function GET(
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { sizeId: string; storeId: string } }
+  { params }: { params:  Promise<{ sizeId: string; storeId: string }> }
 ) {
   try {
     const { userId } = await auth();
@@ -138,7 +138,7 @@ export async function PATCH(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { sizeId: string; storeId: string } }
+  { params }: { params:  Promise<{ sizeId: string; storeId: string }> }
 ) {
   try {
     const { userId } = await auth();

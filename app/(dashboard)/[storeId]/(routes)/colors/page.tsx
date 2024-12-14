@@ -5,9 +5,9 @@ import ColorClient from './components/client';
 import { ApiList } from '@/components/ui/api-alert';
 
 interface ColorsProps {
-    params: {
+    params: Promise<{
         storeId: string;
-    };
+    }>;
 }
 
 const ColorsPage = async ({ params }: ColorsProps) => {

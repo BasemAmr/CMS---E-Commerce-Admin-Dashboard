@@ -4,10 +4,10 @@ import { Separator } from "@radix-ui/react-separator";
 import ProductForm from "../components/products-form";
 
 interface ProductPageProps {
-  params: {
+  params: Promise<{
     productId: string;
     storeId: string;
-  };
+  }>;
 }
 const ProductPage = async ({ params }: ProductPageProps) => {
   const { productId, storeId } = await params;

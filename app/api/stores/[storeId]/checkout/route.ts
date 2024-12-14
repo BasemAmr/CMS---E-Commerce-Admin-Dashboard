@@ -8,7 +8,7 @@ const PAYMOB_SECRET_KEY = process.env.PAYMOB_SECRET_KEY;
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { storeId: string } }
+  { params }: { params:  Promise<{ storeId: string }> }
 ) {
   try {
     const req_body = await req.json();

@@ -4,10 +4,10 @@ import BillboardForm from '../components/billboards-form';
 import { Separator } from '@radix-ui/react-separator';
 
 interface BillboardPageProps {
-    params: {
+    params: Promise<{
         billboardId: string;
         storeId: string;
-    };
+    }>;
 }
 const BillboardPage = async (
     { params }: BillboardPageProps

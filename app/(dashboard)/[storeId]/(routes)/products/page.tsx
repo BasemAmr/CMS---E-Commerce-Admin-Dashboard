@@ -4,9 +4,9 @@ import { ApiList } from '@/components/ui/api-alert';
 import prismadb from '@/lib/prismadb';
 
 interface ProductsPageProps {
-    params: {
+    params: Promise<{
         storeId: string;
-    };
+    }>;
 }
 
 const ProductsPage = async ({ params }: ProductsPageProps) => {

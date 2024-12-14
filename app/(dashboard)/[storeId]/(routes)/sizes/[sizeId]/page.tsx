@@ -4,10 +4,10 @@ import { Separator } from '@radix-ui/react-separator';
 import SizeForm from '../components/size-form';
 
 interface SizesPageProps {
-    params: {
+    params:  Promise<{
         sizeId: string;
         storeId: string;
-    };
+    }>;
 }
 const SizesPage = async (
     { params }: SizesPageProps

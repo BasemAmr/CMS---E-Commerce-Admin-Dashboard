@@ -3,9 +3,9 @@ import { Separator } from '@radix-ui/react-separator';
 import ColorForm from '../components/color-form';
 
 interface ColorsNewPageProps {
-    params: {
+    params: Promise<{
         storeId: string;
-    };
+    }>;
 }
 
 const ColorsNewPage = async ({ params }: ColorsNewPageProps) => {

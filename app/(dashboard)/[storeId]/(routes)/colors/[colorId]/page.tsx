@@ -4,10 +4,10 @@ import { Separator } from '@radix-ui/react-separator';
 import ColorForm from '../components/color-form';
 
 interface ColorsEditPageProps {
-    params: {
+    params: Promise<{
         colorId: string;
         storeId: string;
-    };
+    }>;
 }
 
 const ColorsEditPage = async ({ params }: ColorsEditPageProps) => {

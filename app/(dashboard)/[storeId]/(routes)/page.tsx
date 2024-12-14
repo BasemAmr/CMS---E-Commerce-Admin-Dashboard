@@ -6,9 +6,9 @@ import { formatter } from '@/lib/utils';
 import { CreditCard, DollarSign, Package } from 'lucide-react';
 
 interface DashboardPageProps {
-  params: {
+  params:  Promise<{
     storeId: string;
-  }
+  }>
 }
 
 const DashboardPage = async ({ params }: DashboardPageProps) => {

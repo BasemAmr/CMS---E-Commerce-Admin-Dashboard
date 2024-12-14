@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 // Create a new product
 export async function POST(
   req: NextRequest,
-  { params }: { params: { storeId: string } }
+  { params }: { params:  Promise<{ storeId: string }> }
 ) {
   try {
     const { userId } = await auth();
@@ -62,14 +62,14 @@ export async function POST(
 // Fetch all products for a specific store
 export async function GET(
   req: NextRequest,
-  { params }: { params: { storeId: string } }
+  { params }: { params:  Promise<{ storeId: string }> }
 ) {
   try {
     const { searchParams } = new URL(req.url);
     const categoryId = searchParams.get('categoryId') || undefined;
     const isFeatured = searchParams.get('isFeatured');
     const isArchived = searchParams.get('isArchived');
-    const { storeId } = params;
+    const { storeId } = await params;
 
     if (!storeId) {
       return new NextResponse("Missing storeId", { status: 400 });

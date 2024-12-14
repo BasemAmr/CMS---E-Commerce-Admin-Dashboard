@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 // Get a product by ID
 export async function GET(
   req: NextRequest,
-  { params }: { params: { productId: string } }
+  { params }: { params:  Promise<{ productId: string }> }
 ) {
   try {
     const { productId } = await params;
@@ -37,7 +37,7 @@ export async function GET(
 // Update a product
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { productId: string; storeId: string } }
+  { params }: { params: Promise<{ productId: string; storeId: string }> }
 ) {
   try {
     const { userId } = await auth();
@@ -95,7 +95,7 @@ export async function PATCH(
 // Delete a product
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { productId: string; storeId: string } }
+  { params }: { params:  Promise<{ productId: string; storeId: string }> }
 ) {
   try {
     const { userId } = await auth();

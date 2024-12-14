@@ -4,9 +4,9 @@ import prismadb from '@/lib/prismadb';
 import SizeClient from './components/client';
 
 interface SizesProps {
-    params: {
+    params: Promise<{
         storeId: string;
-    };
+    }>;
 }
 
 const SizesPage = async ({ params }: SizesProps) => {

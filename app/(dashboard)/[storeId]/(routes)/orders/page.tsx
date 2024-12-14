@@ -2,11 +2,13 @@ import OrderClient from './components/order-client';
 import prismadb from '@/lib/prismadb';
 import { OrdersCols } from './components/columns';
 
+
 interface OrdersPageProps {
-    params: {
+    params: Promise<{
         storeId: string;
-    };
+    }>;
 }
+
 
 const OrdersPage = async ({ params }: OrdersPageProps) => {
     const { storeId } = await params;

@@ -12,7 +12,7 @@ const colorSchema = z.object({
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { colorId: string; storeId: string } }
+  { params }: { params:  Promise<{ colorId: string; storeId: string }> }
 ) {
   try {
     const { colorId, storeId } = await params;
@@ -49,7 +49,7 @@ export async function GET(
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { colorId: string; storeId: string } }
+  { params }: { params:  Promise<{ colorId: string; storeId: string }> }
 ) {
   try {
     const { userId } = await auth();
@@ -117,7 +117,7 @@ export async function PATCH(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { colorId: string; storeId: string } }
+  { params }: { params:  Promise<{ colorId: string; storeId: string }> }
 ) {
   try {
     const { userId } = await auth();
