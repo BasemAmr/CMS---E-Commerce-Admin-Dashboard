@@ -11,6 +11,8 @@ interface CategoriesFormProps {
 
 const CategoriesPage = async ({ params }: CategoriesFormProps) => {
     const { storeId } = await params;
+
+    console.time('fetchCategories');
     const categories = await prismadb.category.findMany({
         where: {
             storeId
@@ -21,8 +23,8 @@ const CategoriesPage = async ({ params }: CategoriesFormProps) => {
         orderBy: {
             createdAt: 'desc'
         }
-
     });
+    console.timeEnd('fetchCategories');
     
     return (
         <div className="flex-col">

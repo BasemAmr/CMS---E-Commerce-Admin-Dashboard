@@ -10,6 +10,7 @@ interface ProductsPageProps {
 }
 
 async function fetchProducts (storeId: string) {
+    console.time('fetchProducts');
     const products = await prismadb.product.findMany({
         where: {
             storeId
@@ -21,12 +22,15 @@ async function fetchProducts (storeId: string) {
             images: true
         }
     });
+    console.timeEnd('fetchProducts');
     return products;
 }
 
 const ProductsPage = async ({ params }: ProductsPageProps) => {
     const { storeId } = await params;
-    const products = await  fetchProducts(storeId) || [];
+    console.time('ProductsPage');
+    const products = await fetchProducts(storeId) || [];
+    console.timeEnd('ProductsPage');
     
     return (
         <div className="flex-col">

@@ -11,6 +11,7 @@ interface CategoryPageProps {
 }
 
 async function fetchCategory (categoryId: string) {
+    console.time('fetchCategory');
     const category = await prismadb.category.findFirst({
         where: {
             id: categoryId
@@ -19,15 +20,18 @@ async function fetchCategory (categoryId: string) {
             billboards: true
         }
     });
+    console.timeEnd('fetchCategory');
     return category;
 }
 
 async function fetchBillboards (storeId: string) {
+    console.time('fetchBillboards');
     const billboards = await prismadb.billboard.findMany({
         where: {
             storeId
         }
     });
+    console.timeEnd('fetchBillboards');
     return billboards;
 }
 
@@ -37,25 +41,24 @@ const CategoryPage = async (
 
     const { categoryId, storeId } = await params;
 
-
     let category = null;
+    console.time('fetchBillboards');
     const billboards = await fetchBillboards(storeId);
+    console.timeEnd('fetchBillboards');
     if (categoryId !== 'new') {
-         category = await  fetchCategory(categoryId) || null;
-
+        console.time('fetchCategory');
+        category = await fetchCategory(categoryId) || null;
+        console.timeEnd('fetchCategory');
     }
-   
-        
 
     return (
         <div className="flex-col">
-        <div className="flex-1 space-y-4 p-8 pt-6">
-            <CategoryForm initialData={category} storeId = {storeId} billboards={billboards}/>
-            <Separator />
+            <div className="flex-1 space-y-4 p-8 pt-6">
+                <CategoryForm initialData={category} storeId={storeId} billboards={billboards} />
+                <Separator />
+            </div>
         </div>
-    </div>
     );
-};  
+};
 
-
-export default CategoryPage
+export default CategoryPage;

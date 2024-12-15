@@ -22,12 +22,13 @@ async function fetchSize (sizeId: string) {
 const SizesPage = async (
     { params }: SizesPageProps
 ) => {
+    console.time('SizesPage');
 
     const { sizeId, storeId } = await params;
 
     const size =  sizeId === 'new' ? null : (await fetchSize(sizeId)) || null;
    
-        
+    console.timeEnd('SizesPage');
 
     return (
         <div className="flex-col">

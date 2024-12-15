@@ -11,11 +11,13 @@ interface BillboardPageProps {
 }
 
 async function fetchBillboard (billboardId: string) {
+    console.time('fetchBillboard');
     const billboard = await prismadb.billboard.findFirst({
         where: {
             id: billboardId
         }
     });
+    console.timeEnd('fetchBillboard');
     return billboard;
 }
 
@@ -27,21 +29,17 @@ const BillboardPage = async (
 
     let billboard = null;
     if (billboardId !== 'new') {
-        billboard = await  fetchBillboard(billboardId) || null;
+        billboard = await fetchBillboard(billboardId) || null;
     }
-
-   
-        
 
     return (
         <div className="flex-col">
-        <div className="flex-1 space-y-4 p-8 pt-6">
-            <BillboardForm initialData={billboard} storeId = {storeId}/>
-            <Separator />
+            <div className="flex-1 space-y-4 p-8 pt-6">
+                <BillboardForm initialData={billboard} storeId={storeId} />
+                <Separator />
+            </div>
         </div>
-    </div>
     );
 };  
 
-
-export default BillboardPage
+export default BillboardPage;

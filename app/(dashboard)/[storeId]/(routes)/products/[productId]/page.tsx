@@ -11,6 +11,7 @@ interface ProductPageProps {
 }
 
 async function fetchProduct(productId: string) {
+  console.time("fetchProduct");
   const product = await prismadb.product.findFirst({
     where: {
       id: productId,
@@ -22,47 +23,62 @@ async function fetchProduct(productId: string) {
       images: true,
     },
   });
+  console.timeEnd("fetchProduct");
   return product;
 }
 
 async function fetchCategories(storeId: string) {
+  console.time("fetchCategories");
   const categories = await prismadb.category.findMany({
     where: {
       storeId,
     },
   });
+  console.timeEnd("fetchCategories");
   return categories;
 }
 
 async function fetchSizes(storeId: string) {
+  console.time("fetchSizes");
   const sizes = await prismadb.size.findMany({
     where: {
       storeId,
     },
   });
+  console.timeEnd("fetchSizes");
   return sizes;
 }
 
 async function fetchColors(storeId: string) {
+  console.time("fetchColors");
   const colors = await prismadb.color.findMany({
     where: {
       storeId,
     },
   });
+  console.timeEnd("fetchColors");
   return colors;
 }
 
 const ProductPage = async ({ params }: ProductPageProps) => {
   const { productId, storeId } = await params;
 
+  console.time("fetchProductData");
   const product =
     productId === "new" ? null : (await fetchProduct(productId)) || null;
+  console.timeEnd("fetchProductData");
 
+  console.time("fetchCategoriesData");
   const categories = await fetchCategories(storeId);
+  console.timeEnd("fetchCategoriesData");
 
-  const sizes = await  fetchSizes(storeId);
+  console.time("fetchSizesData");
+  const sizes = await fetchSizes(storeId);
+  console.timeEnd("fetchSizesData");
 
-  const colors = await  fetchColors(storeId);
+  console.time("fetchColorsData");
+  const colors = await fetchColors(storeId);
+  console.timeEnd("fetchColorsData");
 
   return (
     <div className="flex-col">

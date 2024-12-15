@@ -11,19 +11,23 @@ interface ColorsEditPageProps {
 }
 
 async function fetchColor(colorId: string, storeId: string) {
+    console.time('fetchColor');
     const color = await prismadb.color.findFirst({
         where: {
             id: colorId,
             storeId: storeId,
         },
     });
+    console.timeEnd('fetchColor');
     return color;
 }
 
 const ColorsEditPage = async ({ params }: ColorsEditPageProps) => {
     const { colorId, storeId } = await params;
 
-    const color = await  fetchColor(colorId, storeId) || null;
+    console.time('fetchColor');
+    const color = await fetchColor(colorId, storeId) || null;
+    console.timeEnd('fetchColor');
 
     if (!color) {
         return (

@@ -11,6 +11,7 @@ interface ColorsProps {
 }
 
 async function fetchColors (storeId: string) {
+    console.time('fetchColors');
     const colors = await prismadb.color.findMany({
         where: {
             storeId
@@ -19,12 +20,15 @@ async function fetchColors (storeId: string) {
             createdAt: 'desc',
         },
     });
+    console.timeEnd('fetchColors');
     return colors;
 }
 
 const ColorsPage = async ({ params }: ColorsProps) => {
     const { storeId } = await params;
-    const colors = await  fetchColors(storeId);
+    console.time('ColorsPage');
+    const colors = await fetchColors(storeId);
+    console.timeEnd('ColorsPage');
     return (
         <div className="flex-col">
             <div className="flex-1 space-y-4 p-8 pt-6">

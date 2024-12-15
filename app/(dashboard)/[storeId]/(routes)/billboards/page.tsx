@@ -9,18 +9,22 @@ interface BillboardFormProps {
     }>;
 }
 
-async function fetchBillboards (storeId: string) {
+async function fetchBillboards(storeId: string) {
+    console.time('fetchBillboards');
     const billboards = await prismadb.billboard.findMany({
         where: {
             storeId
         }
     });
+    console.timeEnd('fetchBillboards');
     return billboards;
 }
 
 const BillboardsPage = async ({ params }: BillboardFormProps) => {
+    console.time('BillboardsPage');
     const { storeId } = await params;
     const billboards = await fetchBillboards(storeId);
+    console.timeEnd('BillboardsPage');
     
     return (
         <div className="flex-col">
@@ -29,7 +33,7 @@ const BillboardsPage = async ({ params }: BillboardFormProps) => {
                     <BillboardClient billboards={billboards} storeId={storeId} />
                 </div>
                 <Separator className="my-4" />
-                <div className="space-y-4"></div>
+                <div className="space-y-4">
                     <h3 className="text-xl font-semibold">API Integration</h3>
                     <ApiList 
                         entityName="stores/{storeId}/billboards"
@@ -37,6 +41,7 @@ const BillboardsPage = async ({ params }: BillboardFormProps) => {
                     />
                 </div>
             </div>
+        </div>
     );
 };
 
