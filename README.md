@@ -94,6 +94,7 @@ yarn dev
 5. Open http://localhost:3000 with your browser to see the application.
 
 ## Project Structure
+```
 ├── app/
 │   ├── (auth)/         # Authentication related pages
 │   ├── (dashboard)/    # Dashboard, store management, and main layout
@@ -105,6 +106,7 @@ yarn dev
 ├── lib/             # Utility functions and configurations
 ├── providers/             # Modal (Dialog Box) Provdier 
 └── prisma/          # Database schema and migrations
+```
 
 ## Features in Detail
 ### Dashboard Overview
