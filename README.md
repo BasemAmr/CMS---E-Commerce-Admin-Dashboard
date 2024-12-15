@@ -43,7 +43,7 @@ Note that it has a front end store ready to connect , which was part 2 , and it'
 
 1. Clone the repository:
 ```bash
-git clone ttps://github.com/BasemAmr/CMS---E-Commerce-Admin-Dashboard
+git clone https://github.com/BasemAmr/CMS---E-Commerce-Admin-Dashboard
 cd e-commerce-admin
 ```
 
