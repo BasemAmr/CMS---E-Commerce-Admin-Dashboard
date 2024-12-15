@@ -1,9 +1,10 @@
 import prismadb from '@/lib/prismadb';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import  Heading  from "@/components/ui/heading";
+import Heading from "@/components/ui/heading";
 import { Separator } from "@/components/ui/separator";
 import { formatter } from '@/lib/utils';
 import { CreditCard, DollarSign, Package } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
 interface DashboardPageProps {
   params:  Promise<{
@@ -65,8 +66,6 @@ const DashboardPage = async ({ params }: DashboardPageProps) => {
     return { date, revenue };
   });
 
-  const maxRevenue = Math.max(...dailyRevenue.map(d => d.revenue));
-
   return (
     <div className="flex-col">
       <div className="flex-1 space-y-4 p-8 pt-6">
@@ -110,21 +109,29 @@ const DashboardPage = async ({ params }: DashboardPageProps) => {
             <CardTitle>Revenue Overview</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="h-[300px] w-full flex items-end gap-2">
-              {dailyRevenue.map((day) => (
-                <div key={day.date} className="flex-1 flex flex-col items-center gap-2">
-                  <div 
-                    className="w-full bg-blue-600 rounded-t-md transition-all duration-300"
-                    style={{ 
-                      height: `${(day.revenue / maxRevenue) * 100}%`,
-                      minHeight: day.revenue > 0 ? '10%' : '0%'
-                    }}
+            <div className="h-[300px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={dailyRevenue}>
+                  <XAxis 
+                    dataKey="date" 
+                    tickFormatter={(value) => value.split('-').slice(1).join('/')}
+                    tick={{ fontSize: 12 }}
                   />
-                  <span className="text-xs text-muted-foreground rotate-45 origin-left">
-                    {day.date.split('-').slice(1).join('/')}
-                  </span>
-                </div>
-              ))}
+                  <YAxis 
+                    tickFormatter={(value) => formatter.format(value)}
+                    tick={{ fontSize: 12 }}
+                  />
+                  <Tooltip 
+                    formatter={(value) => formatter.format(Number(value))}
+                    labelFormatter={(label) => label.split('-').slice(1).join('/')}
+                  />
+                  <Bar 
+                    dataKey="revenue" 
+                    fill="#2563eb" 
+                    radius={[4, 4, 0, 0]}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
             </div>
           </CardContent>
         </Card>
