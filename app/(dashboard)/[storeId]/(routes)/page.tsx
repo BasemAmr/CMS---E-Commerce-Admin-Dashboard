@@ -45,17 +45,22 @@ async function countProducts(storeId: string) {
 }
 
 const DashboardPage = async ({ params }: DashboardPageProps) => {
-  
+  console.time('Total Dashboard Load');
   
   const {storeId} = await params;
 
-  // Get paid orders
-  const paidOrders = await  fetchOrders(storeId) || [];
+  // Measure orders fetch time
+  console.time('Fetch Orders');
+  const paidOrders = await fetchOrders(storeId) || [];
+  console.timeEnd('Fetch Orders');
 
-  // Get products in stock
+  // Measure products count time
+  console.time('Count Products');
   const stockCount = await countProducts(storeId) || 0;
+  console.timeEnd('Count Products');
 
-  // Calculate total revenue
+  // Measure revenue calculations
+  console.time('Revenue Calculations');
   const totalRevenue = paidOrders.reduce((total, order) => {
     const orderTotal = order.orderItems.reduce((orderSum, item) => {
       return orderSum + item.product.price;
@@ -63,7 +68,6 @@ const DashboardPage = async ({ params }: DashboardPageProps) => {
     return total + orderTotal;
   }, 0);
 
-  // Calculate last 7 days revenue for simple chart
   const last7Days = [...Array(7)].map((_, i) => {
     const date = new Date();
     date.setDate(date.getDate() - i);
@@ -80,6 +84,9 @@ const DashboardPage = async ({ params }: DashboardPageProps) => {
     }, 0);
     return { date, revenue };
   });
+  console.timeEnd('Revenue Calculations');
+
+  console.timeEnd('Total Dashboard Load');
 
   return (
     <div className="flex-col">
