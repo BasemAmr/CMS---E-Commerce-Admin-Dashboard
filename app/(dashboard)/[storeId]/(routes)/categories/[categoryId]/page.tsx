@@ -3,21 +3,21 @@ import React from 'react'
 import { Separator } from '@radix-ui/react-separator';
 import CategoryForm from '../components/categories-form';
 
-interface BillboardPageProps {
+interface CategoryPageProps {
     params: Promise<{
-        billboardId: string;
+        categoryId: string;
         storeId: string;
     }>;
 }
-const BillboardPage = async (
-    { params }: BillboardPageProps
+const CategoryPage = async (
+    { params }: CategoryPageProps
 ) => {
 
-    const { billboardId, storeId } = await params;
+    const { categoryId, storeId } = await params;
 
     const category = await prismadb.category.findFirst({
         where: {
-            id: billboardId,
+            id: categoryId,
         },
         include: {
             billboards: true,
@@ -44,4 +44,4 @@ const BillboardPage = async (
 };  
 
 
-export default BillboardPage
+export default CategoryPage
