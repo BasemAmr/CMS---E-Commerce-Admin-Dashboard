@@ -10,15 +10,20 @@ interface ColorsEditPageProps {
     }>;
 }
 
-const ColorsEditPage = async ({ params }: ColorsEditPageProps) => {
-    const { colorId, storeId } = await params;
-
+async function fetchColor(colorId: string, storeId: string) {
     const color = await prismadb.color.findFirst({
         where: {
             id: colorId,
             storeId: storeId,
         },
-    }) || null;
+    });
+    return color;
+}
+
+const ColorsEditPage = async ({ params }: ColorsEditPageProps) => {
+    const { colorId, storeId } = await params;
+
+    const color = await  fetchColor(colorId, storeId) || null;
 
     if (!color) {
         return (

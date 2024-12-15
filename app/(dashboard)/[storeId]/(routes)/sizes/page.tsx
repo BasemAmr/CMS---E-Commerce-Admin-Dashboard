@@ -9,13 +9,18 @@ interface SizesProps {
     }>;
 }
 
-const SizesPage = async ({ params }: SizesProps) => {
-    const { storeId } = await params;
+async function fetchSizes(storeId: string) {
     const sizes = await prismadb.size.findMany({
         where: {
             storeId
         }
     });
+    return sizes;
+}
+
+const SizesPage = async ({ params }: SizesProps) => {
+    const { storeId } = await params;
+    const sizes = await  fetchSizes(storeId) || [];
     
     return (
         <div className="flex-col">

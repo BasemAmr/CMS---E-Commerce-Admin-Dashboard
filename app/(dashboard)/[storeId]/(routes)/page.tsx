@@ -12,33 +12,48 @@ interface DashboardPageProps {
   }>
 }
 
+async function fetchOrders(storeId: string) {
+  const orders = await prismadb.order.findMany({
+    where: {
+      storeId,
+      isPaid: true,
+    },
+    select: {
+      createdAt: true,
+      orderItems: {
+        select: {
+          product: {
+            select: {
+              price: true
+            }
+          }
+        }
+      }
+    }
+  });
+  return orders;
+}
+
+async function countProducts(storeId: string) {
+  const count = await prismadb.product.count({
+    where: {
+      storeId,
+      isArchived: false,
+    }
+  });
+  return count;
+}
+
 const DashboardPage = async ({ params }: DashboardPageProps) => {
   
   
   const {storeId} = await params;
 
   // Get paid orders
-  const paidOrders = await prismadb.order.findMany({
-    where: {
-      storeId,
-      isPaid: true,
-    },
-    include: {
-      orderItems: {
-        include: {
-          product: true
-        }
-      }
-    }
-  });
+  const paidOrders = await  fetchOrders(storeId) || [];
 
   // Get products in stock
-  const stockCount = await prismadb.product.count({
-    where: {
-      storeId,
-      isArchived: false,
-    }
-  });
+  const stockCount = await countProducts(storeId) || 0;
 
   // Calculate total revenue
   const totalRevenue = paidOrders.reduce((total, order) => {

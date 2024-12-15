@@ -9,18 +9,23 @@ interface SizesPageProps {
         storeId: string;
     }>;
 }
+
+async function fetchSize (sizeId: string) {
+    const size = await prismadb.size.findFirst({
+        where: {
+            id: sizeId
+        }
+    });
+    return size;
+}
+
 const SizesPage = async (
     { params }: SizesPageProps
 ) => {
 
     const { sizeId, storeId } = await params;
 
-    const size = await prismadb.size.findFirst({
-        where: {
-            id: sizeId,
-        },
-    }) || null;
-
+    const size =  sizeId === 'new' ? null : (await fetchSize(sizeId)) || null;
    
         
 

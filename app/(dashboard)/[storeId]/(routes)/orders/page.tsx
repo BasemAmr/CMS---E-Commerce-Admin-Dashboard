@@ -9,21 +9,33 @@ interface OrdersPageProps {
     }>;
 }
 
-
-const OrdersPage = async ({ params }: OrdersPageProps) => {
-    const { storeId } = await params;
+async function fetchOrders (storeId: string) {
     const orders = await prismadb.order.findMany({
         where: {
-            storeId
+            storeId: storeId
         },
         include: {
             orderItems: {
-                include: {
-                    product: true
+                select: {
+                    product: {
+                        select: {
+                            name: true,
+                            price: true
+                        }
+                    }
                 }
             }
+        },
+        orderBy: {
+            createdAt: 'desc'
         }
     });
+    return orders;
+}
+
+const OrdersPage = async ({ params }: OrdersPageProps) => {
+    const { storeId } = await params;
+    const orders = await  fetchOrders(storeId) || [];
     
 const formattedOrders: OrdersCols[] = orders.map(order => {
     return {

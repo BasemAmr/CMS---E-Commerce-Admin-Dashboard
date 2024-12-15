@@ -9,17 +9,26 @@ interface BillboardPageProps {
         storeId: string;
     }>;
 }
+
+async function fetchBillboard (billboardId: string) {
+    const billboard = await prismadb.billboard.findFirst({
+        where: {
+            id: billboardId
+        }
+    });
+    return billboard;
+}
+
 const BillboardPage = async (
     { params }: BillboardPageProps
 ) => {
 
     const { billboardId, storeId } = await params;
 
-    const billboard = await prismadb.billboard.findFirst({
-        where: {
-            id: billboardId,
-        },
-    }) || null;
+    let billboard = null;
+    if (billboardId !== 'new') {
+        billboard = await  fetchBillboard(billboardId) || null;
+    }
 
    
         

@@ -9,19 +9,24 @@ interface ProductsPageProps {
     }>;
 }
 
-const ProductsPage = async ({ params }: ProductsPageProps) => {
-    const { storeId } = await params;
+async function fetchProducts (storeId: string) {
     const products = await prismadb.product.findMany({
         where: {
             storeId
         },
-        include : {
+        include: {
             category: true,
-            sizes : true,
+            sizes: true,
             colors: true,
             images: true
         }
     });
+    return products;
+}
+
+const ProductsPage = async ({ params }: ProductsPageProps) => {
+    const { storeId } = await params;
+    const products = await  fetchProducts(storeId) || [];
     
     return (
         <div className="flex-col">

@@ -9,13 +9,18 @@ interface BillboardFormProps {
     }>;
 }
 
-const BillboardsPage = async ({ params }: BillboardFormProps) => {
-    const { storeId } = await params;
+async function fetchBillboards (storeId: string) {
     const billboards = await prismadb.billboard.findMany({
         where: {
             storeId
         }
     });
+    return billboards;
+}
+
+const BillboardsPage = async ({ params }: BillboardFormProps) => {
+    const { storeId } = await params;
+    const billboards = await fetchBillboards(storeId);
     
     return (
         <div className="flex-col">

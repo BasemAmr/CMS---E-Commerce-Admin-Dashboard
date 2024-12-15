@@ -9,39 +9,60 @@ interface ProductPageProps {
     storeId: string;
   }>;
 }
-const ProductPage = async ({ params }: ProductPageProps) => {
-  const { productId, storeId } = await params;
 
-  const product =
-    (await prismadb.product.findFirst({
-      where: {
-        id: productId,
-      },
-      include: {
-        category: true,
-        sizes: true,
-        colors: true,
-        images: true,
-      },
-    })) || null;
+async function fetchProduct(productId: string) {
+  const product = await prismadb.product.findFirst({
+    where: {
+      id: productId,
+    },
+    include: {
+      category: true,
+      sizes: true,
+      colors: true,
+      images: true,
+    },
+  });
+  return product;
+}
 
+async function fetchCategories(storeId: string) {
   const categories = await prismadb.category.findMany({
     where: {
       storeId,
     },
   });
+  return categories;
+}
 
+async function fetchSizes(storeId: string) {
   const sizes = await prismadb.size.findMany({
     where: {
-    storeId,
+      storeId,
     },
   });
+  return sizes;
+}
 
+async function fetchColors(storeId: string) {
   const colors = await prismadb.color.findMany({
     where: {
-    storeId,
+      storeId,
     },
   });
+  return colors;
+}
+
+const ProductPage = async ({ params }: ProductPageProps) => {
+  const { productId, storeId } = await params;
+
+  const product =
+    productId === "new" ? null : (await fetchProduct(productId)) || null;
+
+  const categories = await fetchCategories(storeId);
+
+  const sizes = await  fetchSizes(storeId);
+
+  const colors = await  fetchColors(storeId);
 
   return (
     <div className="flex-col">

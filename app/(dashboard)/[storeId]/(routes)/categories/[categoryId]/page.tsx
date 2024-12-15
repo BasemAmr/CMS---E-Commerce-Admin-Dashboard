@@ -9,27 +9,41 @@ interface CategoryPageProps {
         storeId: string;
     }>;
 }
+
+async function fetchCategory (categoryId: string) {
+    const category = await prismadb.category.findFirst({
+        where: {
+            id: categoryId
+        },
+        include: {
+            billboards: true
+        }
+    });
+    return category;
+}
+
+async function fetchBillboards (storeId: string) {
+    const billboards = await prismadb.billboard.findMany({
+        where: {
+            storeId
+        }
+    });
+    return billboards;
+}
+
 const CategoryPage = async (
     { params }: CategoryPageProps
 ) => {
 
     const { categoryId, storeId } = await params;
 
-    const category = await prismadb.category.findFirst({
-        where: {
-            id: categoryId,
-        },
-        include: {
-            billboards: true,
-        },
-        
-    }) || null;
 
-    const billboards = await prismadb.billboard.findMany({
-        where: {
-            storeId: storeId,
-        },
-    });
+    let category = null;
+    const billboards = await fetchBillboards(storeId);
+    if (categoryId !== 'new') {
+         category = await  fetchCategory(categoryId) || null;
+
+    }
    
         
 
