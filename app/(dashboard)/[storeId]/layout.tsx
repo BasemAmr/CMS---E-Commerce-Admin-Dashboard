@@ -6,45 +6,42 @@ import { Suspense } from "react";
 
 export default async function DashboardLayout({
   children,
-  params
+  params,
 }: Readonly<{
-    children: React.ReactNode;
-    params: Promise<{storeId: string}>;
+  children: React.ReactNode;
+  params: Promise<{ storeId: string }>;
 }>) {
+  const { userId } = await auth();
 
-    const {userId} = await auth();
+  const { storeId } = await params;
 
-    const {storeId} = await params;
+  if (!userId) {
+    redirect("/sign-in");
+  }
 
-    if (!userId) {
-        redirect("/sign-in");
-    }
+  const store = await prismadb.store.findFirst({
+    where: {
+      id: storeId,
+      userId,
+    },
+  });
 
-    const store = await prismadb.store.findFirst({
-        where: {
-            id: storeId,
-            userId
-        }
-    });
+  if (!store) {
+    redirect("/");
+  }
 
-    if (!store) {
-        redirect("/");
-    }
-
-    const stores = await prismadb.store.findMany({
-        where: {
-            userId
-        }
-    });
+  const stores = await prismadb.store.findMany({
+    where: {
+      userId,
+    },
+  });
 
   return (
     <div>
-        <Suspense   fallback={<div>Loading...</div>}>
-        <Navbar stores={stores}
-            
-        />
-        </Suspense>
-        {children}
+      <Suspense fallback={<div>Loading...</div>}>
+        <Navbar stores={stores} />
+      </Suspense>
+      {children}
     </div>
   );
 }
