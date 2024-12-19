@@ -1,31 +1,26 @@
 import { Separator } from '@/components/ui/separator';
 import BillboardClient from './components/categories-client';
 import { ApiList } from '@/components/ui/api-alert';
-import prismadb from '@/lib/prismadb';
 
 interface CategoriesFormProps {
     params: Promise<{
         storeId: string;
     }>;
 }
+const fetchCategories = async (storeId: string) => {
+    console.time('fetchCategories');
+    const response = await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/categories`, {
+        next: { tags: ['categories'] },
+        cache: 'force-cache'
+    });
+    const categories = await response.json();
+    console.timeEnd('fetchCategories');
+    return categories;
+};
 
 const CategoriesPage = async ({ params }: CategoriesFormProps) => {
     const { storeId } = await params;
-
-    console.time('fetchCategories');
-    const categories = await prismadb.category.findMany({
-        where: {
-            storeId
-        },
-        include: {
-            billboards: true
-        },
-        orderBy: {
-            createdAt: 'desc'
-        }
-    });
-    console.timeEnd('fetchCategories');
-    
+    const categories = await fetchCategories(storeId);
     return (
         <div className="flex-col">
             <div className="flex-1 space-y-4 p-8 pt-6">

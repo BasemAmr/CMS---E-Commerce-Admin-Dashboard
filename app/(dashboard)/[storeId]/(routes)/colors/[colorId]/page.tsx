@@ -1,4 +1,3 @@
-import prismadb from '@/lib/prismadb';
 import React from 'react';
 import { Separator } from '@radix-ui/react-separator';
 import ColorForm from '../components/color-form';
@@ -9,15 +8,13 @@ interface ColorsEditPageProps {
         storeId: string;
     }>;
 }
-
 async function fetchColor(colorId: string, storeId: string) {
     console.time('fetchColor');
-    const color = await prismadb.color.findFirst({
-        where: {
-            id: colorId,
-            storeId: storeId,
-        },
+    const response = await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/colors/${colorId}`, {
+        next: { tags: [`color-${colorId}`] },
+        cache: 'force-cache'
     });
+    const color = await response.json();
     console.timeEnd('fetchColor');
     return color;
 }

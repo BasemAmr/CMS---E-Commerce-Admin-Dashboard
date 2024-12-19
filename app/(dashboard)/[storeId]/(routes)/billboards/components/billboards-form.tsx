@@ -4,7 +4,6 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import axios from 'axios';
 import { toast } from 'sonner';
 import Heading from '@/components/ui/heading';
 import { Button } from '@/components/ui/button';
@@ -25,6 +24,7 @@ import { publicKey, urlEndpoint, authenticator } from '@/lib/i-kit-auth';
 import { Billboard } from '@prisma/client';
 import { Trash } from 'lucide-react';
 import { useState } from 'react';
+import { revalidateTag } from 'next/cache';
 import AlertModal from '@/components/modals/alert-modal';
 
 const formSchema = z.object({
@@ -59,24 +59,40 @@ const BillboardForm = ({ initialData, storeId }: BillboardFormProps) => {
     form.setValue('imageUrl', '');
   };
 
+
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     try {
       setLoading(true);
       if (isEditing && initialData) {
-        await axios.patch(`/api/stores/${storeId}/billboards/${initialData.id}`, data);
+        await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/billboards/${initialData.id}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+          next: { tags: [`billboard-${initialData.id}`, `billboards`] },
+        });
         toast.success('Billboard updated successfully, you will be redirected shortly');
+        revalidateTag(`billboard-${initialData.id}`);
+        revalidateTag('billboards');
         setTimeout(() => {
-           window.location.assign(`/${storeId}/billboards`);
-        } , 2000);
-
+          window.location.assign(`/${storeId}/billboards`);
+        }, 2000);
       } else {
-
-        const res = await axios.post(`/api/stores/${storeId}/billboards`, data);
+        const res = await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/billboards`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+          next: { tags: ['billboards'] },
+        });
         console.log(res);
         toast.success('Billboard created successfully, you will be redirected shortly');
+        revalidateTag('billboards');
         setTimeout(() => {
-           window.location.assign(`/${storeId}/billboards`);
-        } , 2000);
+          window.location.assign(`/${storeId}/billboards`);
+        }, 2000);
       }
     } catch (error) {
       console.error(error);
@@ -86,11 +102,16 @@ const BillboardForm = ({ initialData, storeId }: BillboardFormProps) => {
     }
   };
 
-   const onDelete = async () => {
+  const onDelete = async () => {
     try {
       setLoading(true);
-      await axios.delete(`/api/stores/${storeId}/billboards/${initialData?.id}`);
+      await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/billboards/${initialData?.id}`, {
+        method: 'DELETE',
+        next: { tags: [`billboard-${initialData?.id}`, 'billboards'] },
+      });
       toast.success('Billboard deleted successfully');
+      revalidateTag(`billboard-${initialData?.id}`);
+      revalidateTag('billboards');
       router.push(`/${storeId}/billboards`);
     } catch (error) {
       console.error(error);
@@ -99,7 +120,7 @@ const BillboardForm = ({ initialData, storeId }: BillboardFormProps) => {
       setLoading(false);
       setAlertOpen(false);
     }
-  }
+  };
 
   return (
     <div className="flex flex-col space-y-4">

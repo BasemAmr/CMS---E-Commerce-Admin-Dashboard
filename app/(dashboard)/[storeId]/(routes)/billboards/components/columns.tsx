@@ -8,8 +8,8 @@ import { Button } from "@/components/ui/button"
 import { Copy, Pen, Trash } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
+import { revalidateTag } from 'next/cache';
 import { toast } from "sonner"
-import axios from "axios"
 import AlertModal from "@/components/modals/alert-modal"
 
 
@@ -32,11 +32,22 @@ const BillboardActions = ({ id }: { id: string }) => {
     const urlParts = url.split("/") 
     const storeId = urlParts[1]
 
+
     const onDelete = async () => {
       try {
         setLoading(true);
-        await axios.delete(`/api/stores/${storeId}/billboards/${id}`);
+        const response = await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/billboards/${id}`, {
+          method: 'DELETE',
+          next: { tags: [`billboard-${id}`, 'billboards'] },
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to delete billboard');
+        }
+
         toast.success('Billboard deleted successfully');
+        revalidateTag(`billboard-${id}`);
+        revalidateTag('billboards');
         router.push(`/${storeId}/billboards`);
       } catch (error) {
         console.error(error);
@@ -45,7 +56,7 @@ const BillboardActions = ({ id }: { id: string }) => {
         setLoading(false);
         setAlertOpen(false);
       }
-    }    
+    }
 
   return (
     <div className="flex  gap-4 items-center">

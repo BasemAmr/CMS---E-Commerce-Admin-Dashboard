@@ -1,6 +1,5 @@
 import { Separator } from '@/components/ui/separator';
 import { ApiList } from '@/components/ui/api-alert';
-import prismadb from '@/lib/prismadb';
 import SizeClient from './components/client';
 
 interface SizesProps {
@@ -8,23 +7,19 @@ interface SizesProps {
         storeId: string;
     }>;
 }
-
 async function fetchSizes(storeId: string) {
-    console.time('Fetch Sizes Query');
-    const sizes = await prismadb.size.findMany({
-        where: {
-            storeId
-        }
+    const res = await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/sizes`, {
+        next: {
+            tags: ['sizes']
+        },
+        cache: 'force-cache'
     });
-    console.timeEnd('Fetch Sizes Query');
-    return sizes;
+    return res.json();
 }
 
 const SizesPage = async ({ params }: SizesProps) => {
-    console.time('Total Page Load');
     const { storeId } = await params;
     const sizes = await fetchSizes(storeId) || [];
-    console.timeEnd('Total Page Load');
     
     return (
         <div className="flex-col">

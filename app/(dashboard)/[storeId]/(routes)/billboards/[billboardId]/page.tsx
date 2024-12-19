@@ -1,4 +1,3 @@
-import prismadb from '@/lib/prismadb';
 import React from 'react'
 import BillboardForm from '../components/billboards-form';
 import { Separator } from '@radix-ui/react-separator';
@@ -10,13 +9,12 @@ interface BillboardPageProps {
     }>;
 }
 
-async function fetchBillboard (billboardId: string) {
+async function fetchBillboard(storeId: string, billboardId: string) {
     console.time('fetchBillboard');
-    const billboard = await prismadb.billboard.findFirst({
-        where: {
-            id: billboardId
-        }
+    const response = await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/billboards/${billboardId}`, {
+        next: { tags: [`billboard-${billboardId}`] },cache: 'force-cache'
     });
+    const billboard = await response.json();
     console.timeEnd('fetchBillboard');
     return billboard;
 }
@@ -29,7 +27,7 @@ const BillboardPage = async (
 
     let billboard = null;
     if (billboardId !== 'new') {
-        billboard = await fetchBillboard(billboardId) || null;
+        billboard = await fetchBillboard(storeId, billboardId) || null;
     }
 
     return (

@@ -8,12 +8,8 @@ import { Copy, Pen, Trash } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
-import axios from "axios"
 import AlertModal from "@/components/modals/alert-modal"
-
-
-
-
+import { revalidateTag } from "next/cache"
 
 const SizesActions = ({ id }: { id: string }) => {
   const router = useRouter()
@@ -21,30 +17,42 @@ const SizesActions = ({ id }: { id: string }) => {
   const [loading, setLoading] = useState(false)
   const [mounted, setMounted] = useState(false)
 
-    useEffect(() => {
-        setMounted(true)
-    }, [])
-    if (!mounted) return null
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+  if (!mounted) return null
 
-    // get current url and split it to get storeId
-    const url = window.location.pathname
-    const urlParts = url.split("/") 
-    const storeId = urlParts[1]
+  const url = window.location.pathname
+  const urlParts = url.split("/") 
+  const storeId = urlParts[1]
 
-    const onDelete = async () => {
-      try {
-        setLoading(true);
-        await axios.delete(`/api/stores/${storeId}/sizes/${id}`);
-        toast.success('size deleted successfully');
-        router.push(`/${storeId}/sizes`);
-      } catch (error) {
-        console.error(error);
-        toast.error('Failed to delete size');
-      } finally {
-        setLoading(false);
-        setAlertOpen(false);
+  const onDelete = async () => {
+    try {
+      setLoading(true)
+      const response = await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/sizes/${id}`, {
+        method: 'DELETE',
+        next: {
+          tags: ['sizes', `size-${id}`]
+        }
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to delete size')
       }
-    }    
+
+      await revalidateTag('sizes')
+      await revalidateTag(`size-${id}`)
+      
+      toast.success('Size deleted successfully')
+      router.push(`/${storeId}/sizes`)
+    } catch (error) {
+      console.error(error)
+      toast.error('Failed to delete size')
+    } finally {
+      setLoading(false)
+      setAlertOpen(false)
+    }
+  }
 
   return (
     <div className="flex  gap-4 items-center">

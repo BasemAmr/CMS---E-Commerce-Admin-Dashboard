@@ -4,7 +4,6 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import axios from 'axios';
 import { toast } from 'sonner';
 import Heading from '@/components/ui/heading';
 import { Button } from '@/components/ui/button';
@@ -24,7 +23,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
- 
+
+import { revalidateTag } from 'next/cache';
 import { Input } from '@/components/ui/input';
 
 import {  Billboard } from '@prisma/client';
@@ -63,24 +63,39 @@ const CategoryForm = ({ initialData, storeId, billboards }: CategoryFormProps) =
   });
 
 
+
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     try {
       setLoading(true);
       if (isEditing && initialData) {
-        await axios.patch(`/api/stores/${storeId}/categories/${initialData.id}`, data);
+        await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/categories/${initialData.id}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+          next: { tags: [`category-${initialData.id}`] },
+        });
         toast.success('Category updated successfully, you will be redirected shortly');
+        revalidateTag(`category-${initialData.id}`);
+        revalidateTag(`categories`);
         setTimeout(() => {
-           window.location.assign(`/${storeId}/categories`);
-        } , 2000);
-
+          window.location.assign(`/${storeId}/categories`);
+        }, 2000);
       } else {
-
-        const res = await axios.post(`/api/stores/${storeId}/categories`, data);
-        console.log(res);
+        await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/categories`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+          next: { tags: [`store-${storeId}-categories`] },
+        });
         toast.success('Category created successfully, you will be redirected shortly');
+        revalidateTag(`store-${storeId}-categories`);
         setTimeout(() => {
-           window.location.assign(`/${storeId}/categories`);
-        } , 2000);
+          window.location.assign(`/${storeId}/categories`);
+        }, 2000);
       }
     } catch (error) {
       console.error(error);
@@ -90,11 +105,16 @@ const CategoryForm = ({ initialData, storeId, billboards }: CategoryFormProps) =
     }
   };
 
-   const onDelete = async () => {
+  const onDelete = async () => {
     try {
       setLoading(true);
-      await axios.delete(`/api/stores/${storeId}/categories/${initialData?.id}`);
+      await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/categories/${initialData?.id}`, {
+        method: 'DELETE',
+        next: { tags: [`category-${initialData?.id}`] },
+      });
       toast.success('Category deleted successfully');
+      revalidateTag(`category-${initialData?.id}`);
+      revalidateTag(`categories`);
       router.push(`/${storeId}/categories`);
     } catch (error) {
       console.error(error);
@@ -103,7 +123,7 @@ const CategoryForm = ({ initialData, storeId, billboards }: CategoryFormProps) =
       setLoading(false);
       setAlertOpen(false);
     }
-  }
+  };
 
   return (
     <div className="flex flex-col space-y-4">

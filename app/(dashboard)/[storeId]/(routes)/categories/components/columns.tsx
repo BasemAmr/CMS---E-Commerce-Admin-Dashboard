@@ -9,7 +9,7 @@ import { Copy, Pen, Trash } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
-import axios from "axios"
+import { revalidateTag } from 'next/cache';
 import AlertModal from "@/components/modals/alert-modal"
 
 
@@ -32,11 +32,17 @@ const CategoryActions = ({ id }: { id: string }) => {
     const urlParts = url.split("/") 
     const storeId = urlParts[1]
 
+
     const onDelete = async () => {
       try {
         setLoading(true);
-        await axios.delete(`/api/stores/${storeId}/categories/${id}`);
+        await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/categories/${id}`, {
+          method: 'DELETE',
+        }
+        
+        );
         toast.success('Category deleted successfully');
+        revalidateTag('categories');
         router.push(`/${storeId}/categories`);
       } catch (error) {
         console.error(error);
@@ -45,7 +51,7 @@ const CategoryActions = ({ id }: { id: string }) => {
         setLoading(false);
         setAlertOpen(false);
       }
-    }    
+    }
 
   return (
     <div className="flex  gap-4 items-center">

@@ -1,4 +1,3 @@
-import prismadb from '@/lib/prismadb';
 import React from 'react'
 import { Separator } from '@radix-ui/react-separator';
 import CategoryForm from '../components/categories-form';
@@ -10,35 +9,26 @@ interface CategoryPageProps {
     }>;
 }
 
-async function fetchCategory (categoryId: string) {
+async function fetchCategory(storeId: string, categoryId: string) {
     console.time('fetchCategory');
-    const category = await prismadb.category.findFirst({
-        where: {
-            id: categoryId
-        },
-        include: {
-            billboards: true
-        }
-    });
+    const category = await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/categories/${categoryId}`, {
+        next: { tags: [`category-${categoryId}`] }
+    }).then(res => res.json());
     console.timeEnd('fetchCategory');
     return category;
 }
 
-async function fetchBillboards (storeId: string) {
+async function fetchBillboards(storeId: string) {
     console.time('fetchBillboards');
-    const billboards = await prismadb.billboard.findMany({
-        where: {
-            storeId
-        }
-    });
+    const billboards = await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/billboards`, {
+        next: { tags: ['billboards'] },
+        cache: 'force-cache'
+    }).then(res => res.json());
     console.timeEnd('fetchBillboards');
     return billboards;
 }
 
-const CategoryPage = async (
-    { params }: CategoryPageProps
-) => {
-
+const CategoryPage = async ({ params }: CategoryPageProps) => {
     const { categoryId, storeId } = await params;
 
     let category = null;
@@ -47,7 +37,7 @@ const CategoryPage = async (
     console.timeEnd('fetchBillboards');
     if (categoryId !== 'new') {
         console.time('fetchCategory');
-        category = await fetchCategory(categoryId) || null;
+        category = await fetchCategory(storeId, categoryId) || null;
         console.timeEnd('fetchCategory');
     }
 

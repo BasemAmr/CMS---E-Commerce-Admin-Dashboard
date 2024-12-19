@@ -1,7 +1,6 @@
 import { Separator } from '@/components/ui/separator';
 import BillboardClient from './components/billboard-client';
 import { ApiList } from '@/components/ui/api-alert';
-import prismadb from '@/lib/prismadb';
 
 interface BillboardFormProps {
     params: Promise<{
@@ -11,11 +10,10 @@ interface BillboardFormProps {
 
 async function fetchBillboards(storeId: string) {
     console.time('fetchBillboards');
-    const billboards = await prismadb.billboard.findMany({
-        where: {
-            storeId
-        }
+    const response = await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/billboards`, {
+        next: { tags: ['billboards'] },cache: 'force-cache'
     });
+    const billboards = await response.json();
     console.timeEnd('fetchBillboards');
     return billboards;
 }

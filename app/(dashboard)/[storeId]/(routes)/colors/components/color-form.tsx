@@ -4,7 +4,6 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import axios from 'axios';
 import { toast } from 'sonner';
 import { useState } from 'react';
 
@@ -20,6 +19,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { revalidateTag } from 'next/cache';
 import AlertModal from '@/components/modals/alert-modal';
 import { Trash } from 'lucide-react';
 import { ChromePicker } from  '@/components/ChromePicker';
@@ -49,19 +49,38 @@ const ColorForm = ({ initialData, storeId }: ColorFormProps) => {
     },
   });
 
+
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     try {
       setLoading(true);
       if (isEditing && initialData) {
-        await axios.patch(`/api/stores/${storeId}/colors/${initialData.id}`, data);
+        await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/colors/${initialData.id}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+          next: { tags: [`color-${initialData.id}`] },
+        });
         toast.success('Color updated successfully, you will be redirected shortly');
+        revalidateTag(`color-${initialData.id}`);
+        revalidateTag('colors');
         setTimeout(() => {
           router.push(`/${storeId}/colors`);
         }, 2000);
       } else {
-        const res = await axios.post(`/api/stores/${storeId}/colors`, data);
-        console.log(res);
+        const res = await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/colors`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+          next: { tags: ['colors'] },
+        });
+        const newColor = await res.json();
         toast.success('Color created successfully, you will be redirected shortly');
+        revalidateTag('colors');
+        revalidateTag(`color-${newColor.id}`);
         setTimeout(() => {
           router.push(`/${storeId}/colors`);
         }, 2000);
@@ -77,8 +96,13 @@ const ColorForm = ({ initialData, storeId }: ColorFormProps) => {
   const onDelete = async () => {
     try {
       setLoading(true);
-      await axios.delete(`/api/stores/${storeId}/colors/${initialData?.id}`);
+      await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/colors/${initialData?.id}`, {
+        method: 'DELETE',
+        next: { tags: [`color-${initialData?.id}`] },
+      });
       toast.success('Color deleted successfully');
+      revalidateTag(`color-${initialData?.id}`);
+      revalidateTag('colors');
       router.push(`/${storeId}/colors`);
     } catch (error) {
       console.error(error);

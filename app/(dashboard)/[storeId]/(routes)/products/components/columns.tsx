@@ -9,11 +9,8 @@ import { Copy, Pen, Trash } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
-import axios from "axios"
 import AlertModal from "@/components/modals/alert-modal"
-
-
-
+import { revalidateTag } from "next/cache"
 
 const ProductActions = ({ id }: { id: string }) => {
   const router = useRouter()
@@ -21,30 +18,45 @@ const ProductActions = ({ id }: { id: string }) => {
   const [loading, setLoading] = useState(false)
   const [mounted, setMounted] = useState(false)
 
-    useEffect(() => {
-        setMounted(true)
-    }, [])
-    if (!mounted) return null
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+  if (!mounted) return null
 
-    // get current url and split it to get storeId
-    const url = window.location.pathname
-    const urlParts = url.split("/") 
-    const storeId = urlParts[1]
+  // get current url and split it to get storeId
+  const url = window.location.pathname
+  const urlParts = url.split("/") 
+  const storeId = urlParts[1]
 
-    const onDelete = async () => {
-      try {
-        setLoading(true);
-        await axios.delete(`/api/stores/${storeId}/products/${id}`);
-        toast.success('Product deleted successfully');
-        router.push(`/${storeId}/products`);
-      } catch (error) {
-        console.error(error);
-        toast.error('Failed to delete product');
-      } finally {
-        setLoading(false);
-        setAlertOpen(false);
+  const onDelete = async () => {
+    try {
+      setLoading(true)
+      
+      const response = await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/products/${id}`, {
+        method: 'DELETE',
+        next: {
+          tags: [`product-${id}`]
+        }
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to delete product')
       }
-    }    
+
+      // Revalidate cache
+      revalidateTag('products')
+      revalidateTag(`product-${id}`)
+
+      toast.success('Product deleted successfully')
+      router.push(`/${storeId}/products`)
+    } catch (error) {
+      console.error(error)
+      toast.error('Failed to delete product')
+    } finally {
+      setLoading(false)
+      setAlertOpen(false)
+    }
+  }
 
   return (
     <div className="flex  gap-4 items-center">

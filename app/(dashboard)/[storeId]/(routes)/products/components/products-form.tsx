@@ -5,11 +5,11 @@ import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import axios from "axios";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { revalidateTag } from 'next/cache';
 import {
   Select,
   SelectTrigger,
@@ -85,26 +85,43 @@ const ProductForm = ({
     try {
       setLoading(true);
       if (isEditing && initialData) {
-        await axios.patch(
-          `/api/stores/${storeId}/products/${initialData.id}`,
-          data
-        );
-        toast.success(
-          "Product updated successfully, you will be redirected shortly"
-        );
+        const response = await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/products/${initialData.id}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+          next: { tags: [`product-${initialData.id}`] }
+        });
+
+        if (!response.ok) throw new Error('Failed to update product');
+        
+        revalidateTag('products');
+        revalidateTag(`product-${initialData.id}`);
+        
+        toast.success("Product updated successfully, you will be redirected shortly");
         setTimeout(() => {
           window.location.assign(`/${storeId}/products`);
         }, 2000);
       } else {
-        await axios.post(`/api/stores/${storeId}/products`, data);
-        toast.success(
-          "Product created successfully, you will be redirected shortly"
-        );
+        const response = await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/products`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+          next: { tags: ['products'] }
+        });
+
+        if (!response.ok) throw new Error('Failed to create product');
+        
+        revalidateTag('products');
+        
+        toast.success("Product created successfully, you will be redirected shortly");
         setTimeout(() => {
           window.location.assign(`/${storeId}/products`);
         }, 2000);
       }
-      console.log(data);
     } catch (error) {
       console.error(error);
       toast.error("Failed to save product");
@@ -116,9 +133,16 @@ const ProductForm = ({
   const onDelete = async () => {
     try {
       setLoading(true);
-      await axios.delete(
-        `/api/stores/${storeId}/products/${initialData?.id}`
-      );
+      const response = await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/products/${initialData?.id}`, {
+        method: 'DELETE',
+        next: { tags: [`product-${initialData?.id}`] }
+      });
+
+      if (!response.ok) throw new Error('Failed to delete product');
+
+      revalidateTag('products');
+      revalidateTag(`product-${initialData?.id}`);
+      
       toast.success("Product deleted successfully");
       router.push(`/${storeId}/products`);
     } catch (error) {

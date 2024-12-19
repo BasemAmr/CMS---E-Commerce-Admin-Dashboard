@@ -1,4 +1,3 @@
-import prismadb from "@/lib/prismadb";
 import React from "react";
 import { Separator } from "@radix-ui/react-separator";
 import ProductForm from "../components/products-form";
@@ -9,76 +8,49 @@ interface ProductPageProps {
     storeId: string;
   }>;
 }
-
-async function fetchProduct(productId: string) {
-  console.time("fetchProduct");
-  const product = await prismadb.product.findFirst({
-    where: {
-      id: productId,
-    },
-    include: {
-      category: true,
-      sizes: true,
-      colors: true,
-      images: true,
-    },
+async function fetchProduct(storeId: string, productId: string) {
+  const res = await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/products/${productId}`, {
+    next: { tags: [`product-${productId}`] },
+    cache: 'force-cache'
   });
-  console.timeEnd("fetchProduct");
-  return product;
+  return res.json();
 }
 
 async function fetchCategories(storeId: string) {
-  console.time("fetchCategories");
-  const categories = await prismadb.category.findMany({
-    where: {
-      storeId,
-    },
+  const res = await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/categories`, {
+    next: { tags: ['categories'] },
+    cache: 'force-cache'
   });
-  console.timeEnd("fetchCategories");
-  return categories;
+  return res.json();
 }
 
 async function fetchSizes(storeId: string) {
-  console.time("fetchSizes");
-  const sizes = await prismadb.size.findMany({
-    where: {
-      storeId,
-    },
+  const res = await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/sizes`, {
+    next: { tags: ['sizes'] },
+    cache: 'force-cache'
   });
-  console.timeEnd("fetchSizes");
-  return sizes;
+  return res.json();
 }
 
 async function fetchColors(storeId: string) {
-  console.time("fetchColors");
-  const colors = await prismadb.color.findMany({
-    where: {
-      storeId,
-    },
+  const res = await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/colors`, {
+    next: { tags: ['colors'] },
+    cache: 'force-cache'
   });
-  console.timeEnd("fetchColors");
-  return colors;
+  return res.json();
 }
 
 const ProductPage = async ({ params }: ProductPageProps) => {
   const { productId, storeId } = await params;
 
-  console.time("fetchProductData");
-  const product =
-    productId === "new" ? null : (await fetchProduct(productId)) || null;
-  console.timeEnd("fetchProductData");
+  const product = productId === "new" ? null : 
+    await fetchProduct(storeId, productId);
 
-  console.time("fetchCategoriesData");
-  const categories = await fetchCategories(storeId);
-  console.timeEnd("fetchCategoriesData");
-
-  console.time("fetchSizesData");
-  const sizes = await fetchSizes(storeId);
-  console.timeEnd("fetchSizesData");
-
-  console.time("fetchColorsData");
-  const colors = await fetchColors(storeId);
-  console.timeEnd("fetchColorsData");
+  const [categories, sizes, colors] = await Promise.all([
+    fetchCategories(storeId),
+    fetchSizes(storeId),
+    fetchColors(storeId)
+  ]);
 
   return (
     <div className="flex-col">

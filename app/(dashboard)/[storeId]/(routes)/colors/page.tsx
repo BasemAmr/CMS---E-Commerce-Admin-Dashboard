@@ -1,4 +1,3 @@
-import prismadb from '@/lib/prismadb';
 import React from 'react';
 import { Separator } from '@radix-ui/react-separator';
 import ColorClient from './components/client';
@@ -10,16 +9,13 @@ interface ColorsProps {
     }>;
 }
 
-async function fetchColors (storeId: string) {
+async function fetchColors(storeId: string) {
     console.time('fetchColors');
-    const colors = await prismadb.color.findMany({
-        where: {
-            storeId
-        },
-        orderBy: {
-            createdAt: 'desc',
-        },
+    const response = await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/colors`, {
+        next: { tags: ['colors'] },
+        cache: 'force-cache'
     });
+    const colors = await response.json();
     console.timeEnd('fetchColors');
     return colors;
 }

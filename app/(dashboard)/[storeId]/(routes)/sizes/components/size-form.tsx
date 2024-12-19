@@ -4,12 +4,12 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import axios from 'axios';
+import { revalidateTag } from 'next/cache';
 import { toast } from 'sonner';
 import Heading from '@/components/ui/heading';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import {
+import { 
   Form,
   FormControl,
   FormField,
@@ -18,7 +18,6 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-
 
 import { Size } from '@prisma/client';
 import { Trash } from 'lucide-react';
@@ -49,49 +48,74 @@ const SizeForm = ({ initialData, storeId }: SizeFormProps) => {
     },
   });
 
-  
-
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     try {
       setLoading(true);
       if (isEditing && initialData) {
-        await axios.patch(`/api/stores/${storeId}/sizes/${initialData.id}`, data);
-        toast.success('size updated successfully, you will be redirected shortly');
-        setTimeout(() => {
-           window.location.assign(`/${storeId}/sizes`);
-        } , 2000);
+        const response = await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/sizes/${initialData.id}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+          next: { tags: ['sizes', `size-${initialData.id}`] }
+        });
 
+        if (!response.ok) throw new Error('Failed to update size');
+        
+        await revalidateTag('sizes');
+        await revalidateTag(`size-${initialData.id}`);
+        
+        toast.success('Size updated successfully');
+        router.push(`/${storeId}/sizes`);
       } else {
+        const response = await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/sizes`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+          next: { tags: ['sizes'] }
+        });
 
-        const res = await axios.post(`/api/stores/${storeId}/sizes`, data);
-        console.log(res);
-        toast.success('size created successfully, you will be redirected shortly');
-        setTimeout(() => {
-           window.location.assign(`/${storeId}/sizes`);
-        } , 2000);
+        if (!response.ok) throw new Error('Failed to create size');
+        
+        await revalidateTag('sizes');
+        
+        toast.success('Size created successfully');
+        router.push(`/${storeId}/sizes`);
       }
     } catch (error) {
       console.error(error);
-      toast.error('Failed to save size');
+      toast.error('Something went wrong');
     } finally {
       setLoading(false);
     }
   };
 
-   const onDelete = async () => {
+  const onDelete = async () => {
     try {
       setLoading(true);
-      await axios.delete(`/api/stores/${storeId}/sizes/${initialData?.id}`);
-      toast.success('size deleted successfully');
+      const response = await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/sizes/${initialData?.id}`, {
+        method: 'DELETE',
+        next: { tags: ['sizes', `size-${initialData?.id}`] }
+      });
+
+      if (!response.ok) throw new Error('Failed to delete size');
+      
+      await revalidateTag('sizes');
+      await revalidateTag(`size-${initialData?.id}`);
+      
+      toast.success('Size deleted successfully');
       router.push(`/${storeId}/sizes`);
     } catch (error) {
       console.error(error);
-      toast.error('Failed to delete size');
+      toast.error('Something went wrong');
     } finally {
       setLoading(false);
       setAlertOpen(false);
     }
-  }
+  };
 
   return (
     <div className="flex flex-col space-y-4">

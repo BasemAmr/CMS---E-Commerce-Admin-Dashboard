@@ -1,7 +1,6 @@
 import { Separator } from '@/components/ui/separator';
 import ProductClient from './components/client';
 import { ApiList } from '@/components/ui/api-alert';
-import prismadb from '@/lib/prismadb';
 
 interface ProductsPageProps {
     params: Promise<{
@@ -9,21 +8,14 @@ interface ProductsPageProps {
     }>;
 }
 
-async function fetchProducts (storeId: string) {
-    console.time('fetchProducts');
-    const products = await prismadb.product.findMany({
-        where: {
-            storeId
+async function fetchProducts(storeId: string) {
+    const res = await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/products`, {
+        next: {
+            tags: ['products']
         },
-        include: {
-            category: true,
-            sizes: true,
-            colors: true,
-            images: true
-        }
+        cache: 'force-cache'
     });
-    console.timeEnd('fetchProducts');
-    return products;
+    return res.json();
 }
 
 const ProductsPage = async ({ params }: ProductsPageProps) => {
