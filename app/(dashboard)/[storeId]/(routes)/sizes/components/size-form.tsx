@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { revalidateTag } from 'next/cache';
+;
 import { toast } from 'sonner';
 import Heading from '@/components/ui/heading';
 import { Button } from '@/components/ui/button';
@@ -23,6 +23,7 @@ import { Size } from '@prisma/client';
 import { Trash } from 'lucide-react';
 import { useState } from 'react';
 import AlertModal from '@/components/modals/alert-modal';
+import revalidateTagAction from '@/lib/revalidate-tags';
 
 const formSchema = z.object({
   name: z.string().nonempty(),
@@ -52,7 +53,7 @@ const SizeForm = ({ initialData, storeId }: SizeFormProps) => {
     try {
       setLoading(true);
       if (isEditing && initialData) {
-        const response = await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/sizes/${initialData.id}`, {
+        const response = await fetch(`/${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/sizes/${initialData.id}`, {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
@@ -63,13 +64,13 @@ const SizeForm = ({ initialData, storeId }: SizeFormProps) => {
 
         if (!response.ok) throw new Error('Failed to update size');
         
-        await revalidateTag('sizes');
-        await revalidateTag(`size-${initialData.id}`);
+        await revalidateTagAction('sizes');
+        await revalidateTagAction(`size-${initialData.id}`);
         
         toast.success('Size updated successfully');
         router.push(`/${storeId}/sizes`);
       } else {
-        const response = await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/sizes`, {
+        const response = await fetch(`/${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/sizes`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -80,7 +81,7 @@ const SizeForm = ({ initialData, storeId }: SizeFormProps) => {
 
         if (!response.ok) throw new Error('Failed to create size');
         
-        await revalidateTag('sizes');
+        await revalidateTagAction('sizes');
         
         toast.success('Size created successfully');
         router.push(`/${storeId}/sizes`);
@@ -96,15 +97,15 @@ const SizeForm = ({ initialData, storeId }: SizeFormProps) => {
   const onDelete = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/sizes/${initialData?.id}`, {
+      const response = await fetch(`/${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/sizes/${initialData?.id}`, {
         method: 'DELETE',
         next: { tags: ['sizes', `size-${initialData?.id}`] }
       });
 
       if (!response.ok) throw new Error('Failed to delete size');
       
-      await revalidateTag('sizes');
-      await revalidateTag(`size-${initialData?.id}`);
+      await revalidateTagAction('sizes');
+      await revalidateTagAction(`size-${initialData?.id}`);
       
       toast.success('Size deleted successfully');
       router.push(`/${storeId}/sizes`);

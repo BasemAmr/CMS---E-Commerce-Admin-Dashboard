@@ -9,7 +9,7 @@ interface ProductPageProps {
   }>;
 }
 async function fetchProduct(storeId: string, productId: string) {
-  const res = await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/products/${productId}`, {
+  const res = await fetch(`/${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/products/${productId}`, {
     next: { tags: [`product-${productId}`] },
     cache: 'force-cache'
   });
@@ -17,7 +17,7 @@ async function fetchProduct(storeId: string, productId: string) {
 }
 
 async function fetchCategories(storeId: string) {
-  const res = await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/categories`, {
+  const res = await fetch(`/${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/categories`, {
     next: { tags: ['categories'] },
     cache: 'force-cache'
   });
@@ -25,7 +25,7 @@ async function fetchCategories(storeId: string) {
 }
 
 async function fetchSizes(storeId: string) {
-  const res = await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/sizes`, {
+  const res = await fetch(`/${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/sizes`, {
     next: { tags: ['sizes'] },
     cache: 'force-cache'
   });
@@ -33,7 +33,7 @@ async function fetchSizes(storeId: string) {
 }
 
 async function fetchColors(storeId: string) {
-  const res = await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/colors`, {
+  const res = await fetch(`/${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/colors`, {
     next: { tags: ['colors'] },
     cache: 'force-cache'
   });

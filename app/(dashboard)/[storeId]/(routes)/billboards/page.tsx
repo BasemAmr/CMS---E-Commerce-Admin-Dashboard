@@ -10,7 +10,7 @@ interface BillboardFormProps {
 
 async function fetchBillboards(storeId: string) {
     console.time('fetchBillboards');
-    const response = await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/billboards`, {
+    const response = await fetch(`/${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/billboards`, {
         next: { tags: ['billboards'] },cache: 'force-cache'
     });
     const billboards = await response.json();

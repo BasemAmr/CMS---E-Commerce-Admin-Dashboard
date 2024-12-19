@@ -24,7 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-import { revalidateTag } from 'next/cache';
+;
 import { Input } from '@/components/ui/input';
 
 import {  Billboard } from '@prisma/client';
@@ -32,6 +32,7 @@ import { Trash } from 'lucide-react';
 import { useState } from 'react';
 import AlertModal from '@/components/modals/alert-modal';
 import { categoryPopulateBillboards } from './columns';
+import revalidateTagAction from '@/lib/revalidate-tags';
 
 const formSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -68,7 +69,7 @@ const CategoryForm = ({ initialData, storeId, billboards }: CategoryFormProps) =
     try {
       setLoading(true);
       if (isEditing && initialData) {
-        await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/categories/${initialData.id}`, {
+        await fetch(`/${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/categories/${initialData.id}`, {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
@@ -77,13 +78,13 @@ const CategoryForm = ({ initialData, storeId, billboards }: CategoryFormProps) =
           next: { tags: [`category-${initialData.id}`] },
         });
         toast.success('Category updated successfully, you will be redirected shortly');
-        revalidateTag(`category-${initialData.id}`);
-        revalidateTag(`categories`);
+        revalidateTagAction(`category-${initialData.id}`);
+        revalidateTagAction(`categories`);
         setTimeout(() => {
           window.location.assign(`/${storeId}/categories`);
         }, 2000);
       } else {
-        await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/categories`, {
+        await fetch(`/${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/categories`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -92,7 +93,7 @@ const CategoryForm = ({ initialData, storeId, billboards }: CategoryFormProps) =
           next: { tags: [`store-${storeId}-categories`] },
         });
         toast.success('Category created successfully, you will be redirected shortly');
-        revalidateTag(`store-${storeId}-categories`);
+        revalidateTagAction(`store-${storeId}-categories`);
         setTimeout(() => {
           window.location.assign(`/${storeId}/categories`);
         }, 2000);
@@ -108,13 +109,13 @@ const CategoryForm = ({ initialData, storeId, billboards }: CategoryFormProps) =
   const onDelete = async () => {
     try {
       setLoading(true);
-      await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/categories/${initialData?.id}`, {
+      await fetch(`/${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/categories/${initialData?.id}`, {
         method: 'DELETE',
         next: { tags: [`category-${initialData?.id}`] },
       });
       toast.success('Category deleted successfully');
-      revalidateTag(`category-${initialData?.id}`);
-      revalidateTag(`categories`);
+      revalidateTagAction(`category-${initialData?.id}`);
+      revalidateTagAction(`categories`);
       router.push(`/${storeId}/categories`);
     } catch (error) {
       console.error(error);

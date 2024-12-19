@@ -29,7 +29,7 @@ export async function POST(
     const body = {
       ...paymentData,
       notification_url:
-        `${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/webhook`,
+        `${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/webhook`,
       payment_methods: [4900588],
       redirection_url: `${process.env.FRONTEND_STORE_URL}/success`,
     };

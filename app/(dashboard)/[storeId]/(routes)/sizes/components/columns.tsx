@@ -9,7 +9,8 @@ import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import AlertModal from "@/components/modals/alert-modal"
-import { revalidateTag } from "next/cache"
+import revalidateTagAction from "@/lib/revalidate-tags"
+
 
 const SizesActions = ({ id }: { id: string }) => {
   const router = useRouter()
@@ -29,7 +30,7 @@ const SizesActions = ({ id }: { id: string }) => {
   const onDelete = async () => {
     try {
       setLoading(true)
-      const response = await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/sizes/${id}`, {
+      const response = await fetch(`/${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/sizes/${id}`, {
         method: 'DELETE',
         next: {
           tags: ['sizes', `size-${id}`]
@@ -40,8 +41,8 @@ const SizesActions = ({ id }: { id: string }) => {
         throw new Error('Failed to delete size')
       }
 
-      await revalidateTag('sizes')
-      await revalidateTag(`size-${id}`)
+      await revalidateTagAction('sizes')
+      await revalidateTagAction(`size-${id}`)
       
       toast.success('Size deleted successfully')
       router.push(`/${storeId}/sizes`)

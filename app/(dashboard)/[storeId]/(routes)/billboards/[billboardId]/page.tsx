@@ -11,7 +11,7 @@ interface BillboardPageProps {
 
 async function fetchBillboard(storeId: string, billboardId: string) {
     console.time('fetchBillboard');
-    const response = await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/billboards/${billboardId}`, {
+    const response = await fetch(`/${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/billboards/${billboardId}`, {
         next: { tags: [`billboard-${billboardId}`] },cache: 'force-cache'
     });
     const billboard = await response.json();

@@ -19,11 +19,12 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { revalidateTag } from 'next/cache';
+;
 import AlertModal from '@/components/modals/alert-modal';
 import { Trash } from 'lucide-react';
 import { ChromePicker } from  '@/components/ChromePicker';
 import { Color } from '@prisma/client';
+import revalidateTagAction from '@/lib/revalidate-tags';
 
 const formSchema = z.object({
   name: z.string().nonempty("Name is required"),
@@ -54,7 +55,7 @@ const ColorForm = ({ initialData, storeId }: ColorFormProps) => {
     try {
       setLoading(true);
       if (isEditing && initialData) {
-        await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/colors/${initialData.id}`, {
+        await fetch(`/${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/colors/${initialData.id}`, {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
@@ -63,13 +64,13 @@ const ColorForm = ({ initialData, storeId }: ColorFormProps) => {
           next: { tags: [`color-${initialData.id}`] },
         });
         toast.success('Color updated successfully, you will be redirected shortly');
-        revalidateTag(`color-${initialData.id}`);
-        revalidateTag('colors');
+        revalidateTagAction(`color-${initialData.id}`);
+        revalidateTagAction('colors');
         setTimeout(() => {
           router.push(`/${storeId}/colors`);
         }, 2000);
       } else {
-        const res = await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/colors`, {
+        const res = await fetch(`/${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/colors`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -79,8 +80,8 @@ const ColorForm = ({ initialData, storeId }: ColorFormProps) => {
         });
         const newColor = await res.json();
         toast.success('Color created successfully, you will be redirected shortly');
-        revalidateTag('colors');
-        revalidateTag(`color-${newColor.id}`);
+        revalidateTagAction('colors');
+        revalidateTagAction(`color-${newColor.id}`);
         setTimeout(() => {
           router.push(`/${storeId}/colors`);
         }, 2000);
@@ -96,13 +97,13 @@ const ColorForm = ({ initialData, storeId }: ColorFormProps) => {
   const onDelete = async () => {
     try {
       setLoading(true);
-      await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/colors/${initialData?.id}`, {
+      await fetch(`/${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/colors/${initialData?.id}`, {
         method: 'DELETE',
         next: { tags: [`color-${initialData?.id}`] },
       });
       toast.success('Color deleted successfully');
-      revalidateTag(`color-${initialData?.id}`);
-      revalidateTag('colors');
+      revalidateTagAction(`color-${initialData?.id}`);
+      revalidateTagAction('colors');
       router.push(`/${storeId}/colors`);
     } catch (error) {
       console.error(error);

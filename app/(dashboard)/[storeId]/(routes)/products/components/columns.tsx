@@ -10,7 +10,8 @@ import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import AlertModal from "@/components/modals/alert-modal"
-import { revalidateTag } from "next/cache"
+import revalidateTagAction from "@/lib/revalidate-tags"
+
 
 const ProductActions = ({ id }: { id: string }) => {
   const router = useRouter()
@@ -32,7 +33,7 @@ const ProductActions = ({ id }: { id: string }) => {
     try {
       setLoading(true)
       
-      const response = await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/products/${id}`, {
+      const response = await fetch(`/${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/products/${id}`, {
         method: 'DELETE',
         next: {
           tags: [`product-${id}`]
@@ -44,8 +45,8 @@ const ProductActions = ({ id }: { id: string }) => {
       }
 
       // Revalidate cache
-      revalidateTag('products')
-      revalidateTag(`product-${id}`)
+      revalidateTagAction('products')
+      revalidateTagAction(`product-${id}`)
 
       toast.success('Product deleted successfully')
       router.push(`/${storeId}/products`)

@@ -24,8 +24,9 @@ import { publicKey, urlEndpoint, authenticator } from '@/lib/i-kit-auth';
 import { Billboard } from '@prisma/client';
 import { Trash } from 'lucide-react';
 import { useState } from 'react';
-import { revalidateTag } from 'next/cache';
+;
 import AlertModal from '@/components/modals/alert-modal';
+import revalidateTagAction from '@/lib/revalidate-tags';
 
 const formSchema = z.object({
   label: z.string().min(1, 'Label is required'),
@@ -64,7 +65,7 @@ const BillboardForm = ({ initialData, storeId }: BillboardFormProps) => {
     try {
       setLoading(true);
       if (isEditing && initialData) {
-        await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/billboards/${initialData.id}`, {
+        await fetch(`/${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/billboards/${initialData.id}`, {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
@@ -73,13 +74,13 @@ const BillboardForm = ({ initialData, storeId }: BillboardFormProps) => {
           next: { tags: [`billboard-${initialData.id}`, `billboards`] },
         });
         toast.success('Billboard updated successfully, you will be redirected shortly');
-        revalidateTag(`billboard-${initialData.id}`);
-        revalidateTag('billboards');
+        revalidateTagAction(`billboard-${initialData.id}`);
+        revalidateTagAction('billboards');
         setTimeout(() => {
           window.location.assign(`/${storeId}/billboards`);
         }, 2000);
       } else {
-        const res = await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/billboards`, {
+        const res = await fetch(`/${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/billboards`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -89,7 +90,7 @@ const BillboardForm = ({ initialData, storeId }: BillboardFormProps) => {
         });
         console.log(res);
         toast.success('Billboard created successfully, you will be redirected shortly');
-        revalidateTag('billboards');
+        revalidateTagAction('billboards');
         setTimeout(() => {
           window.location.assign(`/${storeId}/billboards`);
         }, 2000);
@@ -105,13 +106,13 @@ const BillboardForm = ({ initialData, storeId }: BillboardFormProps) => {
   const onDelete = async () => {
     try {
       setLoading(true);
-      await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/billboards/${initialData?.id}`, {
+      await fetch(`/${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/billboards/${initialData?.id}`, {
         method: 'DELETE',
         next: { tags: [`billboard-${initialData?.id}`, 'billboards'] },
       });
       toast.success('Billboard deleted successfully');
-      revalidateTag(`billboard-${initialData?.id}`);
-      revalidateTag('billboards');
+      revalidateTagAction(`billboard-${initialData?.id}`);
+      revalidateTagAction('billboards');
       router.push(`/${storeId}/billboards`);
     } catch (error) {
       console.error(error);

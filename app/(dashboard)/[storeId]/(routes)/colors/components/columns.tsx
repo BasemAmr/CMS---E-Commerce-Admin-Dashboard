@@ -8,7 +8,8 @@ import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import AlertModal from "@/components/modals/alert-modal"
-import { revalidateTag } from 'next/cache'
+import revalidateTagAction from "@/lib/revalidate-tags"
+
 
 const ColorsActions = ({ id }: { id: string }) => {
   const router = useRouter()
@@ -28,13 +29,13 @@ const ColorsActions = ({ id }: { id: string }) => {
   const onDelete = async () => {
     try {
       setLoading(true);
-      await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/colors/${id}`, {
+      await fetch(`/${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/colors/${id}`, {
         method: 'DELETE',
         next: { tags: [`color-${id}`] }
       });
       toast.success('Color deleted successfully');
-      revalidateTag(`color-${id}`);
-      revalidateTag('colors');
+      revalidateTagAction(`color-${id}`);
+      revalidateTagAction('colors');
       router.push(`/${storeId}/colors`);
     } catch (error) {
       console.error(error);

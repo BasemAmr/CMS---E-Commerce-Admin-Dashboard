@@ -9,8 +9,9 @@ import { Copy, Pen, Trash } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
-import { revalidateTag } from 'next/cache';
+;
 import AlertModal from "@/components/modals/alert-modal"
+import revalidateTagAction from "@/lib/revalidate-tags"
 
 
 
@@ -36,13 +37,13 @@ const CategoryActions = ({ id }: { id: string }) => {
     const onDelete = async () => {
       try {
         setLoading(true);
-        await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/categories/${id}`, {
+        await fetch(`/${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/categories/${id}`, {
           method: 'DELETE',
         }
         
         );
         toast.success('Category deleted successfully');
-        revalidateTag('categories');
+        revalidateTagAction('categories');
         router.push(`/${storeId}/categories`);
       } catch (error) {
         console.error(error);

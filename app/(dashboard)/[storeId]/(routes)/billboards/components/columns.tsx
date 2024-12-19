@@ -8,9 +8,10 @@ import { Button } from "@/components/ui/button"
 import { Copy, Pen, Trash } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
-import { revalidateTag } from 'next/cache';
+;
 import { toast } from "sonner"
 import AlertModal from "@/components/modals/alert-modal"
+import revalidateTagAction from "@/lib/revalidate-tags"
 
 
 
@@ -36,7 +37,7 @@ const BillboardActions = ({ id }: { id: string }) => {
     const onDelete = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/billboards/${id}`, {
+        const response = await fetch(`/${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/billboards/${id}`, {
           method: 'DELETE',
           next: { tags: [`billboard-${id}`, 'billboards'] },
         });
@@ -46,8 +47,8 @@ const BillboardActions = ({ id }: { id: string }) => {
         }
 
         toast.success('Billboard deleted successfully');
-        revalidateTag(`billboard-${id}`);
-        revalidateTag('billboards');
+        revalidateTagAction(`billboard-${id}`);
+        revalidateTagAction('billboards');
         router.push(`/${storeId}/billboards`);
       } catch (error) {
         console.error(error);

@@ -75,7 +75,7 @@ PAYMOB_PUBLIC_KEY=
 
 # Needed with Payment Integration and Webhooks only
 FRONTEND_STORE_URL=
-BACKEND_STORE_URL=
+NEXT_PUBLIC_BACKEND_STORE_URL=
 ```
 
 3. Set up the database with Prisma:

@@ -9,7 +9,7 @@ interface CategoriesFormProps {
 }
 const fetchCategories = async (storeId: string) => {
     console.time('fetchCategories');
-    const response = await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/categories`, {
+    const response = await fetch(`/${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/categories`, {
         next: { tags: ['categories'] },
         cache: 'force-cache'
     });

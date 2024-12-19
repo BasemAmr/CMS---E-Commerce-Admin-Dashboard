@@ -8,7 +8,7 @@ interface SizesProps {
     }>;
 }
 async function fetchSizes(storeId: string) {
-    const res = await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/sizes`, {
+    const res = await fetch(`/${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/sizes`, {
         next: {
             tags: ['sizes']
         },

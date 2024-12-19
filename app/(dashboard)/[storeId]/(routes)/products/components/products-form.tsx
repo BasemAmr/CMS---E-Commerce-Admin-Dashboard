@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { revalidateTag } from 'next/cache';
+;
 import {
   Select,
   SelectTrigger,
@@ -35,6 +35,7 @@ import { Trash } from "lucide-react";
 import ImageUpload from "@/components/ui/ImageUpload";
 import { publicKey, urlEndpoint, authenticator } from "@/lib/i-kit-auth";
 import { ImageKitProvider } from "imagekitio-next";
+import revalidateTagAction from "@/lib/revalidate-tags";
 
 const formSchema = z.object({
   name: z.string().nonempty(),
@@ -85,7 +86,7 @@ const ProductForm = ({
     try {
       setLoading(true);
       if (isEditing && initialData) {
-        const response = await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/products/${initialData.id}`, {
+        const response = await fetch(`/${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/products/${initialData.id}`, {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
@@ -96,15 +97,15 @@ const ProductForm = ({
 
         if (!response.ok) throw new Error('Failed to update product');
         
-        revalidateTag('products');
-        revalidateTag(`product-${initialData.id}`);
+        revalidateTagAction('products');
+        revalidateTagAction(`product-${initialData.id}`);
         
         toast.success("Product updated successfully, you will be redirected shortly");
         setTimeout(() => {
           window.location.assign(`/${storeId}/products`);
         }, 2000);
       } else {
-        const response = await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/products`, {
+        const response = await fetch(`/${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/products`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -115,7 +116,7 @@ const ProductForm = ({
 
         if (!response.ok) throw new Error('Failed to create product');
         
-        revalidateTag('products');
+        revalidateTagAction('products');
         
         toast.success("Product created successfully, you will be redirected shortly");
         setTimeout(() => {
@@ -133,15 +134,15 @@ const ProductForm = ({
   const onDelete = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${process.env.BACKEND_STORE_URL}/api/stores/${storeId}/products/${initialData?.id}`, {
+      const response = await fetch(`/${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/products/${initialData?.id}`, {
         method: 'DELETE',
         next: { tags: [`product-${initialData?.id}`] }
       });
 
       if (!response.ok) throw new Error('Failed to delete product');
 
-      revalidateTag('products');
-      revalidateTag(`product-${initialData?.id}`);
+      revalidateTagAction('products');
+      revalidateTagAction(`product-${initialData?.id}`);
       
       toast.success("Product deleted successfully");
       router.push(`/${storeId}/products`);
