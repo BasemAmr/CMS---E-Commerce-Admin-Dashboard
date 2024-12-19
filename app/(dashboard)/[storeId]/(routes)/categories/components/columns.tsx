@@ -37,7 +37,7 @@ const CategoryActions = ({ id }: { id: string }) => {
     const onDelete = async () => {
       try {
         setLoading(true);
-        await fetch(`/${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/categories/${id}`, {
+        await fetch(`${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/categories/${id}`, {
           method: 'DELETE',
         }
         

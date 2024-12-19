@@ -30,7 +30,7 @@ const SizesActions = ({ id }: { id: string }) => {
   const onDelete = async () => {
     try {
       setLoading(true)
-      const response = await fetch(`/${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/sizes/${id}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/sizes/${id}`, {
         method: 'DELETE',
         next: {
           tags: ['sizes', `size-${id}`]

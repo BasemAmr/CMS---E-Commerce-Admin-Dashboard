@@ -37,7 +37,7 @@ const BillboardActions = ({ id }: { id: string }) => {
     const onDelete = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`/${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/billboards/${id}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/billboards/${id}`, {
           method: 'DELETE',
           next: { tags: [`billboard-${id}`, 'billboards'] },
         });

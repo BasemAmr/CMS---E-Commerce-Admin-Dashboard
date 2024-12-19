@@ -33,7 +33,7 @@ const ProductActions = ({ id }: { id: string }) => {
     try {
       setLoading(true)
       
-      const response = await fetch(`/${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/products/${id}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/products/${id}`, {
         method: 'DELETE',
         next: {
           tags: [`product-${id}`]

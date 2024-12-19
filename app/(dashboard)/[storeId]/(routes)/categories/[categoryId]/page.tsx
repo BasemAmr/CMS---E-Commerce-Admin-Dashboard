@@ -11,7 +11,7 @@ interface CategoryPageProps {
 
 async function fetchCategory(storeId: string, categoryId: string) {
     console.time('fetchCategory');
-    const category = await fetch(`/${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/categories/${categoryId}`, {
+    const category = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/categories/${categoryId}`, {
         next: { tags: [`category-${categoryId}`] }
     }).then(res => res.json());
     console.timeEnd('fetchCategory');
@@ -20,7 +20,7 @@ async function fetchCategory(storeId: string, categoryId: string) {
 
 async function fetchBillboards(storeId: string) {
     console.time('fetchBillboards');
-    const billboards = await fetch(`/${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/billboards`, {
+    const billboards = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/billboards`, {
         next: { tags: ['billboards'] },
         cache: 'force-cache'
     }).then(res => res.json());

@@ -69,7 +69,7 @@ const CategoryForm = ({ initialData, storeId, billboards }: CategoryFormProps) =
     try {
       setLoading(true);
       if (isEditing && initialData) {
-        await fetch(`/${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/categories/${initialData.id}`, {
+        await fetch(`${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/categories/${initialData.id}`, {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
@@ -84,7 +84,7 @@ const CategoryForm = ({ initialData, storeId, billboards }: CategoryFormProps) =
           window.location.assign(`/${storeId}/categories`);
         }, 2000);
       } else {
-        await fetch(`/${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/categories`, {
+        await fetch(`${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/categories`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -109,7 +109,7 @@ const CategoryForm = ({ initialData, storeId, billboards }: CategoryFormProps) =
   const onDelete = async () => {
     try {
       setLoading(true);
-      await fetch(`/${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/categories/${initialData?.id}`, {
+      await fetch(`${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/categories/${initialData?.id}`, {
         method: 'DELETE',
         next: { tags: [`category-${initialData?.id}`] },
       });

@@ -11,7 +11,7 @@ interface ColorsProps {
 
 async function fetchColors(storeId: string) {
     console.time('fetchColors');
-    const response = await fetch(`/${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/colors`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/colors`, {
         next: { tags: ['colors'] },
         cache: 'force-cache'
     });

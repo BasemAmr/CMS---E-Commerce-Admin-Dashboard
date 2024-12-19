@@ -53,7 +53,7 @@ const SizeForm = ({ initialData, storeId }: SizeFormProps) => {
     try {
       setLoading(true);
       if (isEditing && initialData) {
-        const response = await fetch(`/${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/sizes/${initialData.id}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/sizes/${initialData.id}`, {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
@@ -70,7 +70,7 @@ const SizeForm = ({ initialData, storeId }: SizeFormProps) => {
         toast.success('Size updated successfully');
         router.push(`/${storeId}/sizes`);
       } else {
-        const response = await fetch(`/${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/sizes`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/sizes`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -97,7 +97,7 @@ const SizeForm = ({ initialData, storeId }: SizeFormProps) => {
   const onDelete = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/sizes/${initialData?.id}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/sizes/${initialData?.id}`, {
         method: 'DELETE',
         next: { tags: ['sizes', `size-${initialData?.id}`] }
       });

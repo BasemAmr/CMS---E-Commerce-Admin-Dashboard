@@ -55,7 +55,7 @@ const ColorForm = ({ initialData, storeId }: ColorFormProps) => {
     try {
       setLoading(true);
       if (isEditing && initialData) {
-        await fetch(`/${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/colors/${initialData.id}`, {
+        await fetch(`${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/colors/${initialData.id}`, {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
@@ -70,7 +70,7 @@ const ColorForm = ({ initialData, storeId }: ColorFormProps) => {
           router.push(`/${storeId}/colors`);
         }, 2000);
       } else {
-        const res = await fetch(`/${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/colors`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/colors`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -97,7 +97,7 @@ const ColorForm = ({ initialData, storeId }: ColorFormProps) => {
   const onDelete = async () => {
     try {
       setLoading(true);
-      await fetch(`/${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/colors/${initialData?.id}`, {
+      await fetch(`${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/colors/${initialData?.id}`, {
         method: 'DELETE',
         next: { tags: [`color-${initialData?.id}`] },
       });

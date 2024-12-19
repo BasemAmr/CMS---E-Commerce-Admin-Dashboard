@@ -65,7 +65,7 @@ const BillboardForm = ({ initialData, storeId }: BillboardFormProps) => {
     try {
       setLoading(true);
       if (isEditing && initialData) {
-        await fetch(`/${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/billboards/${initialData.id}`, {
+        await fetch(`${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/billboards/${initialData.id}`, {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
@@ -80,7 +80,7 @@ const BillboardForm = ({ initialData, storeId }: BillboardFormProps) => {
           window.location.assign(`/${storeId}/billboards`);
         }, 2000);
       } else {
-        const res = await fetch(`/${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/billboards`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/billboards`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -106,7 +106,7 @@ const BillboardForm = ({ initialData, storeId }: BillboardFormProps) => {
   const onDelete = async () => {
     try {
       setLoading(true);
-      await fetch(`/${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/billboards/${initialData?.id}`, {
+      await fetch(`${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/billboards/${initialData?.id}`, {
         method: 'DELETE',
         next: { tags: [`billboard-${initialData?.id}`, 'billboards'] },
       });

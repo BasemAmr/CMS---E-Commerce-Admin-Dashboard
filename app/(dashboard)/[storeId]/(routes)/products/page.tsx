@@ -9,7 +9,7 @@ interface ProductsPageProps {
 }
 
 async function fetchProducts(storeId: string) {
-    const res = await fetch(`/${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/products`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/products`, {
         next: {
             tags: ['products']
         },

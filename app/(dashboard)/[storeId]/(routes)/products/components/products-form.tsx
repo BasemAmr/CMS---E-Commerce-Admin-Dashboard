@@ -86,7 +86,7 @@ const ProductForm = ({
     try {
       setLoading(true);
       if (isEditing && initialData) {
-        const response = await fetch(`/${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/products/${initialData.id}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/products/${initialData.id}`, {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
@@ -105,7 +105,7 @@ const ProductForm = ({
           window.location.assign(`/${storeId}/products`);
         }, 2000);
       } else {
-        const response = await fetch(`/${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/products`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/products`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -134,7 +134,7 @@ const ProductForm = ({
   const onDelete = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/products/${initialData?.id}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/products/${initialData?.id}`, {
         method: 'DELETE',
         next: { tags: [`product-${initialData?.id}`] }
       });

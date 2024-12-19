@@ -10,7 +10,7 @@ interface ColorsEditPageProps {
 }
 async function fetchColor(colorId: string, storeId: string) {
     console.time('fetchColor');
-    const response = await fetch(`/${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/colors/${colorId}`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/colors/${colorId}`, {
         next: { tags: [`color-${colorId}`] },
         cache: 'force-cache'
     });

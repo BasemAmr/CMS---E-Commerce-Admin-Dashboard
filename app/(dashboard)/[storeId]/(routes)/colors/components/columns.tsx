@@ -29,7 +29,7 @@ const ColorsActions = ({ id }: { id: string }) => {
   const onDelete = async () => {
     try {
       setLoading(true);
-      await fetch(`/${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/colors/${id}`, {
+      await fetch(`${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/colors/${id}`, {
         method: 'DELETE',
         next: { tags: [`color-${id}`] }
       });
