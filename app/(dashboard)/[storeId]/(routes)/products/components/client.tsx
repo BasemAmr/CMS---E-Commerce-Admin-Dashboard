@@ -1,3 +1,5 @@
+"use client";
+
 import { ProductForm } from "./form";
 import { useCategories } from "@/hooks/api/use-category";
 import { useSizes } from "@/hooks/api/use-size";
