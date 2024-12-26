@@ -116,6 +116,10 @@ export async function DELETE(
       return new NextResponse("Store not found, Unauthorized", { status: 404 });
     }
 
+    await prismadb.image.deleteMany({
+      where: { productId }
+    });
+
     const product = await prismadb.product.delete({
       where: { id: productId }
     });

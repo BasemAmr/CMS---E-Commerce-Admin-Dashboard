@@ -24,7 +24,6 @@ export const ProductActions = ({ id, storeId }: ProductActionsProps) => {
     onSuccess: () => {
       toast.success("Product deleted successfully");
       router.refresh();
-      setAlertOpen(false);
     },
   });
 
@@ -38,7 +37,12 @@ export const ProductActions = ({ id, storeId }: ProductActionsProps) => {
       <AlertModal
         isOpen={alertOpen}
         onClose={() => setAlertOpen(false)}
-        onConfirm={deleteProduct}
+        onConfirm={
+          () => {
+            deleteProduct();
+            setAlertOpen(false);
+          }
+        }
         loading={isPending}
         title="Are you sure?"
         description="Are you sure you want to delete this product?"
