@@ -40,7 +40,7 @@ export const useCreateProduct = (storeId: string) => {
 
       queryClient.setQueryData<Product[]>(PRODUCT_KEYS.list(storeId), old => [
         ...(old || []),
-        { ...newProduct, id: 'temp-id', createdAt: new Date() } as Product
+        { ...newProduct, id: 'temp-id', createdAt: new Date(), name: "Loading..." } as Product
       ]);
 
       return { previousProducts };
