@@ -1,44 +1,20 @@
-import prismadb from '@/lib/prismadb';
-import React from 'react'
-import { Separator } from '@radix-ui/react-separator';
-import SizeForm from '../components/size-form';
+import { SizeForm } from "../components/form";
 
-interface SizesPageProps {
-    params:  Promise<{
-        sizeId: string;
-        storeId: string;
-    }>;
+interface SizePageProps {
+  params: Promise<{
+    storeId: string;
+    sizeId: string;
+  }>;
 }
 
-async function fetchSize (sizeId: string) {
-    const size = await prismadb.size.findFirst({
-        where: {
-            id: sizeId
-        }
-    });
-    return size;
-}
+export default async function SizePage({ params }: SizePageProps) {
+  const { sizeId, storeId } = await params;
 
-const SizesPage = async (
-    { params }: SizesPageProps
-) => {
-    console.time('SizesPage');
-
-    const { sizeId, storeId } = await params;
-
-    const size =  sizeId === 'new' ? null : (await fetchSize(sizeId)) || null;
-   
-    console.timeEnd('SizesPage');
-
-    return (
-        <div className="flex-col">
-        <div className="flex-1 space-y-4 p-8 pt-6">
-            <SizeForm initialData={size} storeId = {storeId}/>
-            <Separator />
-        </div>
+  return (
+    <div className="flex-col">
+      <div className="flex-1 space-y-4 p-8 pt-6">
+        <SizeForm initialData={sizeId} storeId={storeId} />
+      </div>
     </div>
-    );
-};  
-
-
-export default SizesPage
+  );
+}

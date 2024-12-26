@@ -1,15 +1,29 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { useRouter } from "next/navigation";
+import {
+  useCreateProduct,
+  useUpdateProduct,
+  useDeleteProduct,
+  useProducts,
+} from "@/hooks/api/use-product";
+import * as z from "zod";
+import { useState } from "react";
 import { toast } from "sonner";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  FormDescription
+} from "@/components/ui/form";
+import {Separator} from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
-;
 import {
   Select,
   SelectTrigger,
@@ -17,46 +31,39 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-import {
-  Form,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormMessage,
-  FormDescription,
-} from "@/components/ui/form";
-import AlertModal from "@/components/modals/alert-modal";
-import Heading from "@/components/ui/heading";
-import {Separator} from "@/components/ui/separator";
-import { ProductCols } from "./columns";
-import { Size, Color, Category, Image } from "@prisma/client";
+import { Input } from "@/components/ui/input";
 import { Trash } from "lucide-react";
+import AlertModal from "@/components/modals/alert-modal";
+import {  Color, Product, Size } from "@prisma/client";
 import ImageUpload from "@/components/ui/ImageUpload";
 import { publicKey, urlEndpoint, authenticator } from "@/lib/i-kit-auth";
 import { ImageKitProvider } from "imagekitio-next";
-import revalidateTagAction from "@/lib/revalidate-tags";
+import Heading from "@/components/ui/heading";
+import { categoryPopulateBillboards } from "../../categories/components/columns";
 
-const formSchema = z.object({
-  name: z.string().nonempty(),
-  price: z.coerce.number().positive(),
+
+interface ProductFormProps {
+  initialData?: string;
+  storeId: string;
+  sizes?: Size[];
+  colors?: Color[];
+  categories?: categoryPopulateBillboards[];
+}
+
+const productSchema = z.object({
+  name: z.string().nonempty("Name is required"),
+  price: z.number().positive("Price must be positive"),
   sizeIds: z.array(z.string().nonempty()),
   colorIds: z.array(z.string().nonempty()),
-  categoryId: z.string().nonempty(),
-  images: z.array(z.string().nonempty()),
+  categoryId: z.string().nonempty("Category is required"),
+  images: z.array(z.string().nonempty("Image is required")),
   isFeatured: z.boolean().optional(),
   isArchived: z.boolean().optional(),
 });
 
-interface ProductFormProps {
-  initialData: ProductCols | null;
-  sizes: Size[];
-  colors: Color[];
-  categories: Category[];
-  storeId: string;
-}
+type ProductFormData = z.infer<typeof productSchema>;
 
-const ProductForm = ({
+export const ProductForm = ({
   initialData,
   storeId,
   sizes,
@@ -64,91 +71,68 @@ const ProductForm = ({
   categories,
 }: ProductFormProps) => {
   const router = useRouter();
-  const isEditing = Boolean(initialData);
   const [loading, setLoading] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);
+  const isEditing = initialData !== "new" ? Boolean(initialData) : false;
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: initialData?.name || "",
-      price: initialData?.price || 0,
-      sizeIds: initialData?.sizes?.map((size: Size) => size.id) || [],
-      colorIds: initialData?.colors?.map((color: Color) => color.id) || [],
-      categoryId: initialData?.category?.id || "",
-      images: initialData?.images?.map((img: Image) => img.url) || [],
-      isFeatured: initialData?.isFeatured || false,
-      isArchived: initialData?.isArchived || false,
+  const { mutate: createProduct, isPending: isCreating } =
+    useCreateProduct(storeId);
+  const { mutate: updateProduct, isPending: isUpdating } =
+    useUpdateProduct(storeId);
+  const { mutate: deleteProduct, isPending: isDeleting } = useDeleteProduct({
+    storeId,
+    productId: initialData || "",
+    onSuccess: () => {
+      toast.success("Product deleted successfully");
     },
   });
 
-  const onSubmit = async (data: z.infer<typeof formSchema>) => {
+  const { data: products } = useProducts(storeId);
+  const product = products?.find((p) => p.id === initialData);
+
+  const form = useForm<ProductFormData>({
+    resolver: zodResolver(productSchema),
+    defaultValues: product as Product || {
+      name: "",
+      price: 0,
+      sizeIds: [],
+      colorIds: [],
+      categoryId: "",
+      images: [],
+      isFeatured: false,
+      isArchived: false,
+    },
+  });
+
+  const onSubmit = async (data: ProductFormData) => {
     try {
-      setLoading(true);
-      if (isEditing && initialData) {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/products/${initialData.id}`, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(data),
-          next: { tags: [`product-${initialData.id}`] }
-        });
-
-        if (!response.ok) throw new Error('Failed to update product');
-        
-        revalidateTagAction('products');
-        revalidateTagAction(`product-${initialData.id}`);
-        
-        toast.success("Product updated successfully, you will be redirected shortly");
-        setTimeout(() => {
-          window.location.assign(`/${storeId}/products`);
-        }, 2000);
+      if (isEditing && product) {
+        await updateProduct({ id: product.id, data });
+        toast.success(
+          "Product updated successfully, you will be redirected shortly"
+        );
       } else {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/products`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(data),
-          next: { tags: ['products'] }
-        });
-
-        if (!response.ok) throw new Error('Failed to create product');
-        
-        revalidateTagAction('products');
-        
-        toast.success("Product created successfully, you will be redirected shortly");
-        setTimeout(() => {
-          window.location.assign(`/${storeId}/products`);
-        }, 2000);
+        await createProduct(data);
+        toast.success(
+          "Product created successfully, you will be redirected shortly"
+        );
       }
+
+      setTimeout(() => router.push(`/${storeId}/products`), 200);
     } catch (error) {
+      toast.error("Something went wrong");
       console.error(error);
-      toast.error("Failed to save product");
-    } finally {
-      setLoading(false);
     }
   };
 
   const onDelete = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/products/${initialData?.id}`, {
-        method: 'DELETE',
-        next: { tags: [`product-${initialData?.id}`] }
-      });
-
-      if (!response.ok) throw new Error('Failed to delete product');
-
-      revalidateTagAction('products');
-      revalidateTagAction(`product-${initialData?.id}`);
-      
-      toast.success("Product deleted successfully");
+      await deleteProduct();
       router.push(`/${storeId}/products`);
     } catch (error) {
-      console.error(error);
       toast.error("Failed to delete product");
+      console.error(error);
     } finally {
       setLoading(false);
       setAlertOpen(false);
@@ -245,7 +229,7 @@ const ProductForm = ({
                         <SelectValue placeholder="Select a category" />
                       </SelectTrigger>
                       <SelectContent>
-                        {categories.map((category) => (
+                        {categories?.map((category) => (
                           <SelectItem key={category.id} value={category.id}>
                             {category.name}
                           </SelectItem>
@@ -266,7 +250,7 @@ const ProductForm = ({
                   <FormLabel>Sizes</FormLabel>
                   <FormDescription>Select available sizes</FormDescription>
                   <div className="flex flex-wrap items-start gap-4">
-                    {sizes.map((size) => (
+                    {sizes?.map((size) => (
                       <FormField
                         key={size.id}
                         control={form.control}
@@ -312,7 +296,7 @@ const ProductForm = ({
                   <FormLabel>Colors</FormLabel>
                   <FormDescription>Select available colors</FormDescription>
                   <div className="flex flex-wrap items-start gap-4">
-                    {colors.map((color) => (
+                    {colors?.map((color) => (
                       <FormField
                         key={color.id}
                         control={form.control}
@@ -412,7 +396,7 @@ const ProductForm = ({
                         (urls) => handleImageRemove(urls)
                       }
                       existingImages={
-                        initialData ? form.getValues('images') : []
+                        isEditing ? form.getValues('images') : []
                       } 
                       setFormLoading={
                         (loading) => setLoading(loading)
@@ -437,7 +421,11 @@ const ProductForm = ({
 
                 
           </div>
-          <Button type="submit" className="ml-auto" disabled={loading}>
+          <Button
+            type="submit"
+            className="ml-auto"
+            disabled={loading || isCreating || isUpdating || isDeleting}
+          >
             {isEditing ? "Update" : "Create"}
           </Button>
         </form>
@@ -445,5 +433,3 @@ const ProductForm = ({
     </div>
   );
 };
-
-export default ProductForm;

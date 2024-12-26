@@ -19,12 +19,10 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-;
 import AlertModal from '@/components/modals/alert-modal';
 import { Trash } from 'lucide-react';
 import { ChromePicker } from  '@/components/ChromePicker';
-import { Color } from '@prisma/client';
-import revalidateTagAction from '@/lib/revalidate-tags';
+import { useCreateColor, useUpdateColor, useDeleteColor, useColors } from '@/hooks/api/use-color';
 
 const formSchema = z.object({
   name: z.string().nonempty("Name is required"),
@@ -32,82 +30,61 @@ const formSchema = z.object({
 });
 
 interface ColorFormProps {
-  initialData: Color | null;
+  initialData: string | null;
   storeId: string;
 }
 
 const ColorForm = ({ initialData, storeId }: ColorFormProps) => {
   const router = useRouter();
-  const isEditing = Boolean(initialData);
+  const isEditing = initialData !== "new" ? Boolean(initialData) : false
   const [loading, setLoading] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: initialData?.name || '',
-      value: initialData?.value || '#ffffff', // Default color
+  const { mutate: createColor } = useCreateColor(storeId);
+  const { mutate: updateColor } = useUpdateColor(storeId);
+  const { mutate: deleteColor } = useDeleteColor({
+    storeId,
+    colorId: initialData || '',
+    onSuccess: () => {
+      toast.success('Color deleted successfully');
+      router.push(`/${storeId}/colors`);
     },
   });
 
+  const {data: colors} = useColors(storeId)
+  const color = colors && colors.find((b) => b.id === initialData)
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: color || { name: '', value: '' },
+  });
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
+    setLoading(true);
     try {
-      setLoading(true);
-      if (isEditing && initialData) {
-        await fetch(`${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/colors/${initialData.id}`, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(data),
-          next: { tags: [`color-${initialData.id}`] },
-        });
-        toast.success('Color updated successfully, you will be redirected shortly');
-        revalidateTagAction(`color-${initialData.id}`);
-        revalidateTagAction('colors');
-        setTimeout(() => {
-          router.push(`/${storeId}/colors`);
-        }, 2000);
+      if (isEditing && color) {
+        updateColor({ id: color?.id, data });
+        toast.success('Color updated successfully');
       } else {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/colors`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(data),
-          next: { tags: ['colors'] },
-        });
-        const newColor = await res.json();
-        toast.success('Color created successfully, you will be redirected shortly');
-        revalidateTagAction('colors');
-        revalidateTagAction(`color-${newColor.id}`);
-        setTimeout(() => {
-          router.push(`/${storeId}/colors`);
-        }, 2000);
+        createColor(data);
+        toast.success('Color created successfully');
       }
+      router.push(`/${storeId}/colors`);
     } catch (error) {
-      console.error(error);
       toast.error('Failed to save color');
+      console.error(error)
     } finally {
       setLoading(false);
     }
   };
 
   const onDelete = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
-      await fetch(`${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/colors/${initialData?.id}`, {
-        method: 'DELETE',
-        next: { tags: [`color-${initialData?.id}`] },
-      });
-      toast.success('Color deleted successfully');
-      revalidateTagAction(`color-${initialData?.id}`);
-      revalidateTagAction('colors');
-      router.push(`/${storeId}/colors`);
+      deleteColor();
     } catch (error) {
-      console.error(error);
       toast.error('Failed to delete color');
+      console.error(error)
     } finally {
       setLoading(false);
       setAlertOpen(false);
@@ -127,9 +104,7 @@ const ColorForm = ({ initialData, storeId }: ColorFormProps) => {
       <div className="flex justify-between px-4 items-center">
         <Heading
           title={isEditing ? 'Edit Color' : 'Create Color'}
-          description={
-            isEditing ? 'Update your color details' : 'Add a new color'
-          }
+          description={isEditing ? 'Update your color details' : 'Add a new color'}
         />
         {isEditing && (
           <Button variant="destructive" onClick={() => setAlertOpen(true)} size="icon">
@@ -139,10 +114,7 @@ const ColorForm = ({ initialData, storeId }: ColorFormProps) => {
       </div>
       <Separator />
       <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-8 w-full"
-        >
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 w-full">
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3">
             <FormField
               control={form.control}
@@ -157,7 +129,6 @@ const ColorForm = ({ initialData, storeId }: ColorFormProps) => {
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
               name="value"
@@ -176,7 +147,6 @@ const ColorForm = ({ initialData, storeId }: ColorFormProps) => {
               )}
             />
           </div>
-
           <Button type="submit" className="ml-auto" disabled={loading}>
             {isEditing ? 'Update' : 'Create'}
           </Button>

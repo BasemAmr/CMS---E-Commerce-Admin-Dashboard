@@ -59,12 +59,13 @@ export const ApiAlert: React.FC<ApiAlertProps> = ({
 interface ApiListProps {
     entityName: string;
     entityIdName: string;
+    storeId: string;
 }
 
-export const ApiList: React.FC<ApiListProps> = ({ entityName, entityIdName }) => {
+export const ApiList: React.FC<ApiListProps> = ({ entityName, entityIdName, storeId }) => {
     const origin = useOrigin();
 
-    const baseUrl = `${origin}/api/${entityName}`;
+    const baseUrl = `${origin}/api/stores/${storeId}/${entityName}`;
 
     const apis = [
         {
