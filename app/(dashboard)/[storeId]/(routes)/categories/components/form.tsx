@@ -149,7 +149,7 @@ const CategoryForm = ({ initialData, storeId }: CategoryFormProps) => {
                         </SelectItem>
                       ))) 
                     : (
-                      <SelectItem value="" disabled>
+                      <SelectItem value="disabled" disabled>
                         Loading...
                       </SelectItem>
                     )

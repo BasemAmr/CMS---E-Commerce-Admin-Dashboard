@@ -6,7 +6,7 @@ export type ProductCols = {
   colors: Color[];
   sizes: Size[];
   category: Category;
-  images: Image[];
+  images: Partial<Image>[];
 } & Product;
 
 export const productColumns: ColumnDef<ProductCols>[] = [

@@ -20,9 +20,9 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  FormDescription
+  FormDescription,
 } from "@/components/ui/form";
-import {Separator} from "@/components/ui/separator";
+import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
@@ -34,13 +34,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Trash } from "lucide-react";
 import AlertModal from "@/components/modals/alert-modal";
-import {  Color, Product, Size } from "@prisma/client";
+import { Color, Size } from "@prisma/client";
 import ImageUpload from "@/components/ui/ImageUpload";
 import { publicKey, urlEndpoint, authenticator } from "@/lib/i-kit-auth";
 import { ImageKitProvider } from "imagekitio-next";
 import Heading from "@/components/ui/heading";
 import { categoryPopulateBillboards } from "../../categories/components/columns";
-
 
 interface ProductFormProps {
   initialData?: string;
@@ -92,7 +91,13 @@ export const ProductForm = ({
 
   const form = useForm<ProductFormData>({
     resolver: zodResolver(productSchema),
-    defaultValues: product as Product || {
+    defaultValues: product ? {
+      ...product,
+      images: product.images.map(img => img.url || ''),
+      sizeIds: product.sizes.map(size => size.id),
+      colorIds: product.colors.map(color => color.id),
+      
+    } : {
       name: "",
       price: 0,
       sizeIds: [],
@@ -140,11 +145,11 @@ export const ProductForm = ({
   };
 
   const handleImageSuccess = (urls: string[]) => {
-    form.setValue('images', urls);
+    form.setValue("images", urls);
   };
 
   const handleImageRemove = (urls: string[]) => {
-    form.setValue('images', urls);
+    form.setValue("images", urls);
   };
 
   return (
@@ -203,11 +208,22 @@ export const ProductForm = ({
             <FormField
               control={form.control}
               name="price"
+              
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Price</FormLabel>
                   <FormControl>
-                    <Input type="number" placeholder="Product price" {...field} />
+                    <Input
+                      type="number"
+                      placeholder="Product price"
+                      {...field}
+                      onChange={
+                        (e) => {
+                          field.onChange(parseFloat(e.target.value));
+                        }
+                        
+                      }
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -270,7 +286,9 @@ export const ProductForm = ({
                                       field.onChange([...field.value, size.id]);
                                     } else {
                                       field.onChange(
-                                        field.value.filter((id) => id !== size.id)
+                                        field.value.filter(
+                                          (id) => id !== size.id
+                                        )
                                       );
                                     }
                                   }}
@@ -373,10 +391,9 @@ export const ProductForm = ({
                   </FormItem>
                 )}
               />
-              
             </div>
             {/* Image Upload Field */}
-              <ImageKitProvider
+            <ImageKitProvider
               publicKey={publicKey}
               urlEndpoint={urlEndpoint}
               authenticator={authenticator}
@@ -388,38 +405,26 @@ export const ProductForm = ({
                   <FormItem>
                     <FormLabel>Image</FormLabel>
                     <FormControl>
-                    <ImageUpload
-                      onSuccess={
-                        (urls) => handleImageSuccess(urls)
-                      } 
-                      onRemove={
-                        (urls) => handleImageRemove(urls)
-                      }
-                      existingImages={
-                        isEditing ? form.getValues('images') : []
-                      } 
-                      setFormLoading={
-                        (loading) => setLoading(loading)
-                      }
-                      multiple={true} 
-                    />
+                      <ImageUpload
+                        onSuccess={(urls) => handleImageSuccess(urls)}
+                        onRemove={(urls) => handleImageRemove(urls)}
+                        existingImages={
+                          isEditing ? form.getValues("images") : []
+                        }
+                        setFormLoading={(loading) => setLoading(loading)}
+                        multiple={true}
+                      />
                     </FormControl>
-                    <FormMessage  />
-                    {
-                        !form.getValues('images') && (
-                            <p 
-                                className="text-sm text-gray-500"
-                            >
-                                Image will not be uploaded if more than 10MB
-                            </p>
-                        )
-                    }
+                    <FormMessage />
+                    {!form.getValues("images") && (
+                      <p className="text-sm text-gray-500">
+                        Image will not be uploaded if more than 10MB
+                      </p>
+                    )}
                   </FormItem>
                 )}
               />
             </ImageKitProvider>
-
-                
           </div>
           <Button
             type="submit"
