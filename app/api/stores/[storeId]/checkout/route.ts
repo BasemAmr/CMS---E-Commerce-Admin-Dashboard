@@ -56,12 +56,12 @@ export async function POST(
         storeId: storeId,
         isPaid: false,
         orderItems: {
-          create: productIds.map((productId: string) => ({
+          create: productIds.filter((id: any) => !!id).map((productId: string) => ({
             product: { connect: { id: productId } },
           })),
         },
-        phone: paymentData.billing_data.phone_number,
-        address: `Street: ${paymentData.billing_data.street}, Building: ${paymentData.billing_data.building}, Apartment: ${paymentData.billing_data.apartment}, Floor: ${paymentData.billing_data.floor}, ${paymentData.billing_data.state}, ${paymentData.billing_data.country}`,
+        phone: paymentData?.billing_data?.phone_number || "",
+        address: `Street: ${paymentData?.billing_data?.street || ""}, Building: ${paymentData?.billing_data?.building || ""}, Apartment: ${paymentData?.billing_data?.apartment || ""}, Floor: ${paymentData?.billing_data?.floor || ""}, ${paymentData?.billing_data?.state || ""}, ${paymentData?.billing_data?.country || ""}`,
       },
     });
 
