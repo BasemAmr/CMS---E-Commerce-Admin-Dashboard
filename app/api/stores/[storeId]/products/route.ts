@@ -93,7 +93,18 @@ export async function GET(
       }
     });
 
-    return NextResponse.json(products, { status: 200 });
+    const productsWithCompatibility = products.map((product) => ({
+      ...product,
+      category: product.category ? {
+        ...product.category,
+        billboard: (product.category as any).billboard ? {
+          ...(product.category as any).billboard,
+          url: (product.category as any).billboard.imageUrl
+        } : null
+      } : null
+    }));
+
+    return NextResponse.json(productsWithCompatibility, { status: 200 });
   } catch (error) {
     console.log("[PRODUCT_GET_ERROR]", error);
     return new NextResponse("Internal Server Error", { status: 500 });

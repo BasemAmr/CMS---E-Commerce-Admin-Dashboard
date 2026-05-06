@@ -23,12 +23,17 @@ export async function GET(
             return new NextResponse("Category not found", { status: 404 });
         }
 
+        const billboardData = category.billboard ? {
+            ...category.billboard,
+            url: category.billboard.imageUrl
+        } : null;
+
         return NextResponse.json({
             ...category,
-            billboard: category.billboard ? {
-                ...category.billboard,
-                url: category.billboard.imageUrl
-            } : null
+            billboard: billboardData,
+            billboards: billboardData, // Plural compatibility
+            billboardImageUrl: category.billboard?.imageUrl,
+            billboardLabel: category.billboard?.label
         });
         
     } catch (error) {

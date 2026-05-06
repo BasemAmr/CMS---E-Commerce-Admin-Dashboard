@@ -2,7 +2,13 @@ const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_STORE_URL;
 
 export const apiClient = {
   async fetch<T>(endpoint: string, options?: RequestInit): Promise<T> {
-    const response = await fetch(`${BASE_URL}${endpoint}`, {
+    // Sanitize BASE_URL: remove trailing slashes and any accidental /api/stores suffix
+    const baseUrl = (BASE_URL || '').replace(/\/+$/, '').replace(/\/api\/stores\/.*$/, '');
+    
+    // Ensure endpoint starts with a slash
+    const sanitizedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+    
+    const response = await fetch(`${baseUrl}${sanitizedEndpoint}`, {
       ...options,
       headers: {
         'Content-Type': 'application/json',

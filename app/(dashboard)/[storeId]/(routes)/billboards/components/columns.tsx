@@ -26,8 +26,8 @@ export const billboardCols: ColumnDef<Billboard>[] = [
       return (
         <div className="flex items-center">
           <Image
-            src={row.original.imageUrl}
-            alt={row.original.label}
+            src={row.original.imageUrl || "https://placehold.jp/150x150.png"}
+            alt={row.original.label || "Billboard"}
             width={50}
             height={50}
           />

@@ -84,15 +84,23 @@ export async function GET(
         });
         console.log("Billboards found:", categories);
         
-        const categoriesWithUrl = categories.map((category) => ({
-            ...category,
-            billboard: category.billboard ? {
+        const categoriesWithCompatibility = categories.map((category) => {
+            const billboardData = category.billboard ? {
                 ...category.billboard,
-                url: category.billboard.imageUrl
-            } : null
-        }));
+                url: category.billboard.imageUrl // Standard alias
+            } : null;
+
+            return {
+                ...category,
+                billboard: billboardData,     // Singular
+                billboards: billboardData,    // Plural compatibility
+                // Flattened compatibility for some shop templates
+                billboardImageUrl: category.billboard?.imageUrl,
+                billboardLabel: category.billboard?.label
+            };
+        });
         
-        return NextResponse.json(categoriesWithUrl, { status: 200 });
+        return NextResponse.json(categoriesWithCompatibility, { status: 200 });
     }
     catch (error) {
         console.log("CATEGORY_ROUTE_GET_ERROR", error);
