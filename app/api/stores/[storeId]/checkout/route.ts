@@ -1,6 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
 import axios, { AxiosError } from "axios";
 import prismadb from "@/lib/prismadb";
+import { Product } from "@prisma/client";
 
 const PAYMOB_SECRET_KEY = process.env.PAYMOB_SECRET_KEY;
 // const PAYMOB_PUBLIC_KEY = process.env.PAYMOB_PUBLIC_KEY;
@@ -8,7 +9,7 @@ const PAYMOB_SECRET_KEY = process.env.PAYMOB_SECRET_KEY;
 
 export async function POST(
   req: NextRequest,
-  { params }: { params:  Promise<{ storeId: string }> }
+  { params }: { params: Promise<{ storeId: string }> }
 ) {
   try {
     const req_body = await req.json();
@@ -38,7 +39,7 @@ export async function POST(
       },
     });
 
-    const items = products.map((product) => ({
+    const items = products.map((product: Product) => ({
       name: product.name,
       amount_cents: Math.round(product.price * 100),
       quantity: 1,
@@ -90,7 +91,7 @@ export async function POST(
       },
     });
 
-    console.log ("Order created:", order);
+    console.log("Order created:", order);
     // order id:
     console.log("Order ID: ", order.id)
 
