@@ -12,6 +12,7 @@ export async function POST(
 ) {
   try {
     const req_body = await req.json();
+    console.log("CHECKOUT_REQUEST_BODY:", JSON.stringify(req_body, null, 2));
     const { storeId } = await params;
 
     if (!PAYMOB_SECRET_KEY) {
@@ -26,8 +27,30 @@ export async function POST(
       );
     }
 
+    const products = await prismadb.product.findMany({
+      where: {
+        id: {
+          in: productIds.filter((id: any) => typeof id === 'string'),
+        },
+      },
+      include: {
+        images: true,
+      },
+    });
+
+    const items = products.map((product) => ({
+      name: product.name,
+      amount_cents: Math.round(product.price * 100),
+      quantity: 1,
+      description: product.name,
+      // Trying both common field names for images in checkout UIs
+      image: product.images[0]?.url,
+      image_url: product.images[0]?.url,
+    }));
+
     const body = {
       ...paymentData,
+      items, // Use our constructed items
       notification_url:
         `${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/webhook`,
       payment_methods: [4900588],
