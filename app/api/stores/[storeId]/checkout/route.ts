@@ -39,7 +39,7 @@ export async function POST(
       },
     });
 
-    const items = products.map((product: Product) => ({
+    const items = products.map((product: (Product & { images: { url: string }[] })) => ({
       name: product.name,
       amount_cents: Math.round(product.price * 100),
       quantity: 1,
