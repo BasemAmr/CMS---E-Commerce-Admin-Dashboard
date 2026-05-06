@@ -51,22 +51,20 @@ export async function POST(
     console.log(response.data);
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const orderData = {
-      store: { connect: { id: storeId } },
-      isPaid: false,
-      orderItems: {
-        create: productIds.filter((id: any) => !!id).map((productId: string) => ({
-          product: { connect: { id: productId } },
-        })),
-      },
-      phone: paymentData?.billing_data?.phone_number || "",
-      address: `Street: ${paymentData?.billing_data?.street || ""}, Building: ${paymentData?.billing_data?.building || ""}, Apartment: ${paymentData?.billing_data?.apartment || ""}, Floor: ${paymentData?.billing_data?.floor || ""}, ${paymentData?.billing_data?.state || ""}, ${paymentData?.billing_data?.country || ""}`,
-    };
-
-    console.log("Creating order with data:", JSON.stringify(orderData, null, 2));
-
     const order = await prismadb.order.create({
-      data: orderData
+      data: {
+        storeId: storeId,
+        isPaid: false,
+        orderItems: {
+          create: productIds
+            .filter((id: any) => typeof id === 'string' && id.length > 0)
+            .map((productId: string) => ({
+              productId: productId,
+            })),
+        },
+        phone: paymentData?.billing_data?.phone_number || "",
+        address: `Street: ${paymentData?.billing_data?.street || ""}, Building: ${paymentData?.billing_data?.building || ""}, Apartment: ${paymentData?.billing_data?.apartment || ""}, Floor: ${paymentData?.billing_data?.floor || ""}, ${paymentData?.billing_data?.state || ""}, ${paymentData?.billing_data?.country || ""}`,
+      },
     });
 
     console.log ("Order created:", order);
