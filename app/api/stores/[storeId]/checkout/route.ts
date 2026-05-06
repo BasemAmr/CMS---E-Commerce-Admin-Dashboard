@@ -41,7 +41,7 @@ export async function POST(
 
     const items = products.map((product: (Product & { images: { url: string }[] })) => ({
       name: product.name,
-      amount_cents: Math.round(product.price * 100),
+      amount: Math.round(product.price * 100),
       quantity: 1,
       description: product.name,
       // Trying both common field names for images in checkout UIs
