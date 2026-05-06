@@ -41,7 +41,7 @@ export const useCreateCategory = (storeId: string) => {
 
       queryClient.setQueryData<Category[]>(CATEGORY_KEYS.list(storeId), (old: any) => [
         ...(old || []),
-        { ...newCategory, id: 'temp-id', createdAt: new Date(), billboards:{imageUrl:'loading'} } as Category
+        { ...newCategory, id: 'temp-id', createdAt: new Date(), billboard:{imageUrl:'loading'} } as any
       ]);
 
       return { previousCategories };

@@ -19,7 +19,17 @@ export async function GET(
             }
         });
 
-        return NextResponse.json(category);
+        if (!category) {
+            return new NextResponse("Category not found", { status: 404 });
+        }
+
+        return NextResponse.json({
+            ...category,
+            billboard: category.billboard ? {
+                ...category.billboard,
+                url: category.billboard.imageUrl
+            } : null
+        });
         
     } catch (error) {
         console.log("[CATEGORY_GET_ERROR]", error);

@@ -85,7 +85,12 @@ export async function GET(
         });
         console.log("Billboards found:", billboards);
         
-        return NextResponse.json(billboards, { status: 200 });
+        const billboardsWithUrl = billboards.map((billboard) => ({
+            ...billboard,
+            url: billboard.imageUrl
+        }));
+        
+        return NextResponse.json(billboardsWithUrl, { status: 200 });
     }
     catch (error) {
         console.log("BILLBOARD_ROUTE_GET_ERROR", error);

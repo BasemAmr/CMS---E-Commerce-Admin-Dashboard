@@ -6,12 +6,8 @@ import Image from "next/image";
 import { CategoryActions } from "./actions";
 
 export type categoryPopulateBillboards = {
-  billboards: {
-    [key in keyof Billboard]: Billboard[key];
-  };
-} & {
-  [key in keyof Category]: Category[key];
-};
+  billboard: Billboard;
+} & Category;
 
 export const categoriesCols: ColumnDef<categoryPopulateBillboards>[] = [
   {
@@ -24,15 +20,15 @@ export const categoriesCols: ColumnDef<categoryPopulateBillboards>[] = [
     cell: ({ row }) => (
       <div className="flex items-center gap-2">
         <Image
-          src={row.original.billboards.imageUrl === "loading" ? "https://placehold.jp/150x150.png" : row.original.billboards.imageUrl}
-          alt={row.original.billboards.label}
+          src={row.original.billboard?.imageUrl === "loading" ? "https://placehold.jp/150x150.png" : row.original.billboard?.imageUrl || "https://placehold.jp/150x150.png"}
+          alt={row.original.billboard?.label || "Category Billboard"}
           width={50}
           height={50}
           quality={
-            row.original.billboards.imageUrl === "loading" ? 20 : 80
+            row.original.billboard?.imageUrl === "loading" ? 20 : 80
           }
         />
-        <span>{row.original.billboards.label}</span>
+        <span>{row.original.billboard?.label || "No Billboard"}</span>
       </div>
     ),
   },

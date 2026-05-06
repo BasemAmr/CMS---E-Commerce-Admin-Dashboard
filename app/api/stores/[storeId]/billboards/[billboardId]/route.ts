@@ -16,7 +16,14 @@ export async function GET(
             }
         });
 
-        return NextResponse.json(billboard);
+        if (!billboard) {
+            return new NextResponse("Billboard not found", { status: 404 });
+        }
+
+        return NextResponse.json({
+            ...billboard,
+            url: billboard.imageUrl
+        });
         
     } catch (error) {
         console.log("[BILLBOARD_GET_ERROR]", error);

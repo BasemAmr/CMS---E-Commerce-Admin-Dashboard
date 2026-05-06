@@ -84,7 +84,15 @@ export async function GET(
         });
         console.log("Billboards found:", categories);
         
-        return NextResponse.json(categories, { status: 200 });
+        const categoriesWithUrl = categories.map((category) => ({
+            ...category,
+            billboard: category.billboard ? {
+                ...category.billboard,
+                url: category.billboard.imageUrl
+            } : null
+        }));
+        
+        return NextResponse.json(categoriesWithUrl, { status: 200 });
     }
     catch (error) {
         console.log("CATEGORY_ROUTE_GET_ERROR", error);
