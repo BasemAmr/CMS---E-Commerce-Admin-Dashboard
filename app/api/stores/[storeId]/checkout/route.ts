@@ -88,5 +88,7 @@ export async function POST(
         { status: 500 }
       );
     }
+    console.error("GENERIC_CHECKOUT_ERROR", error);
+    return new NextResponse("Internal Server Error", { status: 500 });
   }
 }

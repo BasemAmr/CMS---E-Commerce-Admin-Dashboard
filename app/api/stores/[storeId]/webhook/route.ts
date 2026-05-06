@@ -27,6 +27,8 @@ export async function POST(req: Request) {
             return NextResponse.json({ received: true });
         }
 
+        return NextResponse.json({ received: true, message: "Transaction not successful or unhandled case" });
+
     } catch (error) {
         console.error('[WEBHOOK_ERROR]', error);
         return NextResponse.json({ error: 'Webhook handler failed' }, { status: 500 });
