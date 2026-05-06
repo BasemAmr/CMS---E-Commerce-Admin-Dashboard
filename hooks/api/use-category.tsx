@@ -39,7 +39,7 @@ export const useCreateCategory = (storeId: string) => {
       await queryClient.cancelQueries({ queryKey: CATEGORY_KEYS.list(storeId) });
       const previousCategories = queryClient.getQueryData<Category[]>(CATEGORY_KEYS.list(storeId));
 
-      queryClient.setQueryData<Category[]>(CATEGORY_KEYS.list(storeId), old => [
+      queryClient.setQueryData<Category[]>(CATEGORY_KEYS.list(storeId), (old: any) => [
         ...(old || []),
         { ...newCategory, id: 'temp-id', createdAt: new Date(), billboards:{imageUrl:'loading'} } as Category
       ]);
@@ -66,7 +66,7 @@ export const useUpdateCategory = (storeId: string) => {
       await queryClient.cancelQueries({ queryKey: CATEGORY_KEYS.detail(storeId, id) });
       const previousCategory = queryClient.getQueryData<Category>(CATEGORY_KEYS.detail(storeId, id));
 
-      queryClient.setQueryData<Category>(CATEGORY_KEYS.detail(storeId, id), old => {
+      queryClient.setQueryData<Category>(CATEGORY_KEYS.detail(storeId, id), (old: any) => {
         if (!old) return old;
         return {
           ...old,
@@ -100,8 +100,8 @@ export const useDeleteCategory = ({ storeId, categoryId, onSuccess }: {
       await queryClient.cancelQueries({ queryKey: CATEGORY_KEYS.list(storeId) });
       const previousCategories = queryClient.getQueryData<Category[]>(CATEGORY_KEYS.list(storeId));
 
-      queryClient.setQueryData<Category[]>(CATEGORY_KEYS.list(storeId), old => 
-        old?.filter(category => category.id !== categoryId) || []
+      queryClient.setQueryData<Category[]>(CATEGORY_KEYS.list(storeId), (old: any) => 
+        old?.filter((category: any) => category.id !== categoryId) || []
       );
 
       return { previousCategories };

@@ -41,13 +41,13 @@ const OrdersPage = async ({ params }: OrdersPageProps) => {
     const orders = await fetchOrders(storeId) || [];
     console.timeEnd('OrdersPage');
 
-    const formattedOrders: OrdersCols[] = orders.map(order => {
+    const formattedOrders: OrdersCols[] = orders.map((order: any) => {
         return {
             id: order.id,
             phone: order.phone,
             address: order.address,
-            totalPrice: `EGP ${(order.orderItems.reduce((acc, item) => acc + item.product.price, 0)).toFixed(2)}`,
-            products: order.orderItems.map(item => item.product.name).join(", "),
+            totalPrice: `EGP ${(order.orderItems.reduce((acc: number, item: any) => acc + item.product.price, 0)).toFixed(2)}`,
+            products: order.orderItems.map((item: any) => item.product.name).join(", "),
             isPaid: order.isPaid,
             createdAt: order.createdAt,
         }

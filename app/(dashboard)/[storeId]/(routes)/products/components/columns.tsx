@@ -39,7 +39,7 @@ export const productColumns: ColumnDef<ProductCols>[] = [
     header: "Sizes",
     cell: ({ row }) => {
       const color = row.original.isFeatured ? "text-green-500" : row.original.isArchived ? "text-gray-500" : "text-black";
-      return <span className={color}>{row.original.sizes.map((size) => size.name).join(", ")}</span>;
+      return <span className={color}>{row.original.sizes.map((size: any) => size.name).join(", ")}</span>;
     },
   },
   {
@@ -47,7 +47,7 @@ export const productColumns: ColumnDef<ProductCols>[] = [
     header: "Colors",
     cell: ({ row }) => {
       const color = row.original.isFeatured ? "text-green-500" : row.original.isArchived ? "text-gray-500" : "text-black";
-      return row.original.colors.map((colorItem) => (
+      return row.original.colors.map((colorItem: any) => (
         <div key={colorItem.id} className={`flex items-center space-x-2 ${color}`}>
           <span
             className="w-6 h-6 rounded-full border"

@@ -17,7 +17,11 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+
   async headers() {
+
+
+
     return [
       {
         // matching all API routes

@@ -43,7 +43,7 @@ export const useCreateBillboard = (storeId: string) => {
       await queryClient.cancelQueries({ queryKey: BILLBOARD_KEYS.list(storeId) });
       const previousBillboards = queryClient.getQueryData<Billboard[]>(BILLBOARD_KEYS.list(storeId));
       
-      queryClient.setQueryData<Billboard[]>(BILLBOARD_KEYS.list(storeId), old => [
+      queryClient.setQueryData<Billboard[]>(BILLBOARD_KEYS.list(storeId), (old: any) => [
         ...(old || []),
         { ...newBillboard, id: 'temp-id', createdAt: new Date() } as Billboard
       ]);
@@ -70,7 +70,7 @@ export const useUpdateBillboard = (storeId: string) => {
       await queryClient.cancelQueries({ queryKey: BILLBOARD_KEYS.detail(storeId, id) });
       const previousBillboard = queryClient.getQueryData<Billboard>(BILLBOARD_KEYS.detail(storeId, id));
       
-      queryClient.setQueryData<Billboard>(BILLBOARD_KEYS.detail(storeId, id), old => {
+      queryClient.setQueryData<Billboard>(BILLBOARD_KEYS.detail(storeId, id), (old: any) => {
         if (!old) return old;
         return {
           ...old,
@@ -104,8 +104,8 @@ export const useDeleteBillboard = ({ storeId, billboardId, onSuccess }: {
       await queryClient.cancelQueries({ queryKey: BILLBOARD_KEYS.list(storeId) });
       const previousBillboards = queryClient.getQueryData<Billboard[]>(BILLBOARD_KEYS.list(storeId));
       
-      queryClient.setQueryData<Billboard[]>(BILLBOARD_KEYS.list(storeId), old => 
-        old?.filter(billboard => billboard.id !== billboardId) || []
+      queryClient.setQueryData<Billboard[]>(BILLBOARD_KEYS.list(storeId), (old: any) => 
+        old?.filter((billboard: any) => billboard.id !== billboardId) || []
       );
 
       return { previousBillboards };

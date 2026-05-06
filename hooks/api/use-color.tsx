@@ -38,7 +38,7 @@ export const useCreateColor = (storeId: string) => {
       await queryClient.cancelQueries({ queryKey: COLOR_KEYS.list(storeId) });
       const previousColors = queryClient.getQueryData<Color[]>(COLOR_KEYS.list(storeId));
 
-      queryClient.setQueryData<Color[]>(COLOR_KEYS.list(storeId), old => [
+      queryClient.setQueryData<Color[]>(COLOR_KEYS.list(storeId), (old: any) => [
         ...(old || []),
         { ...newColor, id: 'temp-id', createdAt: new Date() } as Color
       ]);
@@ -65,7 +65,7 @@ export const useUpdateColor = (storeId: string) => {
       await queryClient.cancelQueries({ queryKey: COLOR_KEYS.detail(storeId, id) });
       const previousColor = queryClient.getQueryData<Color>(COLOR_KEYS.detail(storeId, id));
 
-      queryClient.setQueryData<Color>(COLOR_KEYS.detail(storeId, id), old => {
+      queryClient.setQueryData<Color>(COLOR_KEYS.detail(storeId, id), (old: any) => {
         if (!old) return old;
         return {
           ...old,
@@ -99,8 +99,8 @@ export const useDeleteColor = ({ storeId, colorId, onSuccess }: {
       await queryClient.cancelQueries({ queryKey: COLOR_KEYS.list(storeId) });
       const previousColors = queryClient.getQueryData<Color[]>(COLOR_KEYS.list(storeId));
 
-      queryClient.setQueryData<Color[]>(COLOR_KEYS.list(storeId), old => 
-        old?.filter(color => color.id !== colorId) || []
+      queryClient.setQueryData<Color[]>(COLOR_KEYS.list(storeId), (old: any) => 
+        old?.filter((color: any) => color.id !== colorId) || []
       );
 
       return { previousColors };

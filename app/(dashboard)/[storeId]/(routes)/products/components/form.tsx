@@ -93,9 +93,9 @@ export const ProductForm = ({
     resolver: zodResolver(productSchema),
     defaultValues: product ? {
       ...product,
-      images: product.images.map(img => img.url || ''),
-      sizeIds: product.sizes.map(size => size.id),
-      colorIds: product.colors.map(color => color.id),
+      images: product.images.map((img: any) => img.url || ''),
+      sizeIds: product.sizes.map((size: any) => size.id),
+      colorIds: product.colors.map((color: any) => color.id),
       
     } : {
       name: "",
@@ -245,7 +245,7 @@ export const ProductForm = ({
                         <SelectValue placeholder="Select a category" />
                       </SelectTrigger>
                       <SelectContent>
-                        {categories?.map((category) => (
+                        {categories?.map((category: any) => (
                           <SelectItem key={category.id} value={category.id}>
                             {category.name}
                           </SelectItem>
@@ -266,7 +266,7 @@ export const ProductForm = ({
                   <FormLabel>Sizes</FormLabel>
                   <FormDescription>Select available sizes</FormDescription>
                   <div className="flex flex-wrap items-start gap-4">
-                    {sizes?.map((size) => (
+                    {sizes?.map((size: any) => (
                       <FormField
                         key={size.id}
                         control={form.control}
@@ -314,7 +314,7 @@ export const ProductForm = ({
                   <FormLabel>Colors</FormLabel>
                   <FormDescription>Select available colors</FormDescription>
                   <div className="flex flex-wrap items-start gap-4">
-                    {colors?.map((color) => (
+                    {colors?.map((color: any) => (
                       <FormField
                         key={color.id}
                         control={form.control}

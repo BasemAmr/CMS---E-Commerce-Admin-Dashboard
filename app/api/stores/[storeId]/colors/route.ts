@@ -50,7 +50,7 @@ export async function POST(
   } catch (error) {
     console.log("COLOR_ROUTE_POST_ERROR", error);
     if (error instanceof z.ZodError) {
-      return new NextResponse(error.errors.map(e => e.message).join(", "), { status: 400 });
+      return new NextResponse(error.issues.map((e: any) => e.message).join(", "), { status: 400 });
     }
     return new NextResponse("Internal Server Error", { status: 500 });
   }

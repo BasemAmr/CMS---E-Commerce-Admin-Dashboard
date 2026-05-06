@@ -61,12 +61,13 @@ const DashboardPage = async ({ params }: DashboardPageProps) => {
 
   // Measure revenue calculations
   console.time('Revenue Calculations');
-  const totalRevenue = paidOrders.reduce((total, order) => {
-    const orderTotal = order.orderItems.reduce((orderSum, item) => {
+  const totalRevenue = paidOrders.reduce((total: number, order: any) => {
+    const orderTotal = order.orderItems.reduce((orderSum: number, item: any) => {
       return orderSum + item.product.price;
     }, 0);
     return total + orderTotal;
   }, 0);
+
 
   const last7Days = [...Array(7)].map((_, i) => {
     const date = new Date();
@@ -75,13 +76,14 @@ const DashboardPage = async ({ params }: DashboardPageProps) => {
   }).reverse();
 
   const dailyRevenue = last7Days.map(date => {
-    const dayOrders = paidOrders.filter(order => 
+    const dayOrders = paidOrders.filter((order: any) => 
       order.createdAt.toISOString().split('T')[0] === date
     );
-    const revenue = dayOrders.reduce((sum, order) => {
-      return sum + order.orderItems.reduce((orderSum, item) => 
+    const revenue = dayOrders.reduce((sum: number, order: any) => {
+      return sum + order.orderItems.reduce((orderSum: number, item: any) => 
         orderSum + item.product.price, 0);
     }, 0);
+
     return { date, revenue };
   });
   console.timeEnd('Revenue Calculations');

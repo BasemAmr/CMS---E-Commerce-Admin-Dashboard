@@ -38,7 +38,7 @@ interface CategoryFormProps {
 const categorySchema = z.object({
   name: z.string().min(1, "Name is required"),
   billboardId: z.string({
-    required_error: "Please select Billboard.",
+    message: "Please select Billboard.",
   }),
 });
 
@@ -68,7 +68,10 @@ const CategoryForm = ({ initialData, storeId }: CategoryFormProps) => {
 
   const form = useForm<CategoryFormData>({
     resolver: zodResolver(categorySchema),
-    defaultValues: category || {
+    defaultValues: category ? {
+      name: category.name,
+      billboardId: category.billboardId,
+    } : {
       name: "",
       billboardId: "",
     },

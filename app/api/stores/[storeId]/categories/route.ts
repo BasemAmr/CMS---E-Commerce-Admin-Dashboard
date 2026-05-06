@@ -79,7 +79,7 @@ export async function GET(
                 storeId: storeId
             },
             include : {
-                billboards: true
+                billboard: true
             }
         });
         console.log("Billboards found:", categories);

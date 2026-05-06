@@ -15,7 +15,7 @@ export async function GET(
                 id: categoryId,
             },
             include: {
-                billboards: true
+                billboard: true
             }
         });
 

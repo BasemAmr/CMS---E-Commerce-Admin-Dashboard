@@ -38,7 +38,7 @@ export const useCreateProduct = (storeId: string) => {
       await queryClient.cancelQueries({ queryKey: PRODUCT_KEYS.list(storeId) });
       const previousProducts = queryClient.getQueryData<Product[]>(PRODUCT_KEYS.list(storeId));
 
-      queryClient.setQueryData<Product[]>(PRODUCT_KEYS.list(storeId), old => [
+      queryClient.setQueryData<Product[]>(PRODUCT_KEYS.list(storeId), (old: any) => [
         ...(old || []),
         { ...newProduct, id: 'temp-id', createdAt: new Date(), name: "Loading..." } as Product
       ]);
@@ -65,7 +65,7 @@ export const useUpdateProduct = (storeId: string) => {
       await queryClient.cancelQueries({ queryKey: PRODUCT_KEYS.detail(storeId, id) });
       const previousProduct = queryClient.getQueryData<Product>(PRODUCT_KEYS.detail(storeId, id));
 
-      queryClient.setQueryData<Product>(PRODUCT_KEYS.detail(storeId, id), old => {
+      queryClient.setQueryData<Product>(PRODUCT_KEYS.detail(storeId, id), (old: any) => {
         if (!old) return old;
         return {
           ...old,
@@ -99,8 +99,8 @@ export const useDeleteProduct = ({ storeId, productId, onSuccess }: {
       await queryClient.cancelQueries({ queryKey: PRODUCT_KEYS.list(storeId) });
       const previousProducts = queryClient.getQueryData<Product[]>(PRODUCT_KEYS.list(storeId));
 
-      queryClient.setQueryData<Product[]>(PRODUCT_KEYS.list(storeId), old => 
-        old?.filter(product => product.id !== productId) || []
+      queryClient.setQueryData<Product[]>(PRODUCT_KEYS.list(storeId), (old: any) => 
+        old?.filter((product: any) => product.id !== productId) || []
       );
 
       return { previousProducts };

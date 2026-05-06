@@ -53,7 +53,7 @@ const Navbar: React.FC<NavbarProps> = ({
   const renderUserButton = () => {
     
   if (isMounted) {
-    return <UserButton afterSignOutUrl="/" />;
+    return <UserButton />;
   }
     
   }

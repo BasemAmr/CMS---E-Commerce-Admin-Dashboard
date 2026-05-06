@@ -36,7 +36,7 @@ export const useCreateSize = (storeId: string) => {
       await queryClient.cancelQueries({ queryKey: SIZE_KEYS.list(storeId) });
       const previousSizes = queryClient.getQueryData<Size[]>(SIZE_KEYS.list(storeId));
 
-      queryClient.setQueryData<Size[]>(SIZE_KEYS.list(storeId), old => [
+      queryClient.setQueryData<Size[]>(SIZE_KEYS.list(storeId), (old: any) => [
         ...(old || []),
         { ...newSize, id: 'temp-id', createdAt: new Date() } as Size
       ]);
@@ -63,7 +63,7 @@ export const useUpdateSize = (storeId: string) => {
       await queryClient.cancelQueries({ queryKey: SIZE_KEYS.detail(storeId, id) });
       const previousSize = queryClient.getQueryData<Size>(SIZE_KEYS.detail(storeId, id));
 
-      queryClient.setQueryData<Size>(SIZE_KEYS.detail(storeId, id), old => {
+      queryClient.setQueryData<Size>(SIZE_KEYS.detail(storeId, id), (old: any) => {
         if (!old) return old;
         return {
           ...old,
@@ -97,8 +97,8 @@ export const useDeleteSize = ({ storeId, sizeId, onSuccess }: {
       await queryClient.cancelQueries({ queryKey: SIZE_KEYS.list(storeId) });
       const previousSizes = queryClient.getQueryData<Size[]>(SIZE_KEYS.list(storeId));
 
-      queryClient.setQueryData<Size[]>(SIZE_KEYS.list(storeId), old => 
-        old?.filter(size => size.id !== sizeId) || []
+      queryClient.setQueryData<Size[]>(SIZE_KEYS.list(storeId), (old: any) => 
+        old?.filter((size: any) => size.id !== sizeId) || []
       );
 
       return { previousSizes };
