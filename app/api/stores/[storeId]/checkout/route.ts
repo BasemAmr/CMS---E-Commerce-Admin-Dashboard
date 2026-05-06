@@ -18,7 +18,7 @@ export async function POST(
       throw new Error("Paymob API key not configured");
     }
 
-    const { productIds, ...paymentData } = req_body;
+    const { productIds, amount, ...paymentData } = req_body;
     if (!productIds || productIds.length === 0) {
       return NextResponse.json(
         { error: "Product IDs are required" },
@@ -26,7 +26,15 @@ export async function POST(
       );
     }
 
+    if (amount == null) {
+      return NextResponse.json(
+        { error: "Amount is required" },
+        { status: 400 }
+      );
+    }
+
     const body = {
+      amount,
       ...paymentData,
       notification_url:
         `${process.env.NEXT_PUBLIC_BACKEND_STORE_URL}/api/stores/${storeId}/webhook`,
