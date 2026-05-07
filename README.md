@@ -19,7 +19,7 @@ Note that it has a front end store ready to connect , which was part 2 , and it'
 
 ## Tech Stack
 
-- **Framework**: [Next.js 15](https://nextjs.org/)
+- **Framework**: [Next.js 15](https://nextjs.org/) (see [Version Analysis](./NEXTJS_VERSION_ANALYSIS.md) for upgrade guide)
 - **ORM**: [Prisma](https://www.prisma.io/)
 - **Database**: [Neon](https://www.neon.tech/)
 - **Authentication**: [Clerk](https://clerk.com/)
@@ -92,6 +92,17 @@ yarn dev
 ```
 
 5. Open http://localhost:3000 with your browser to see the application.
+
+## Version Management
+
+This project uses Next.js 15.1.0 with React 19. For detailed information about:
+- Current vs latest Next.js versions
+- Syntax differences and breaking changes
+- Upgrade recommendations and migration guide
+
+Please refer to [NEXTJS_VERSION_ANALYSIS.md](./NEXTJS_VERSION_ANALYSIS.md)
+
+> **Note:** The codebase already follows Next.js 15+ best practices, including async params pattern, making future upgrades smoother.
 
 ## Project Structure
 ```
