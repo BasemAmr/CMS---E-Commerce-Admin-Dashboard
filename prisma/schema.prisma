@@ -139,6 +139,7 @@ model ColorToProduct {
 
   @@id([productId, colorId])
   @@index([colorId])
+  @@map("_ColorToProduct")
 }
 
 model ProductToSize {
@@ -149,4 +150,5 @@ model ProductToSize {
 
   @@id([productId, sizeId])
   @@index([sizeId])
+  @@map("_ProductToSize")
 }
