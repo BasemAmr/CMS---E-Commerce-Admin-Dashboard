@@ -42,10 +42,14 @@ export async function POST(
         isFeatured,
         isArchived,
         sizes: {
-          connect: sizeIds.map((id: string) => ({ id }))
+          create: sizeIds.map((sizeId: string) => ({
+            size: { connect: { id: sizeId } }
+          }))
         },
         colors: {
-          connect: colorIds.map((id: string) => ({ id }))
+          create: colorIds.map((colorId: string) => ({
+            color: { connect: { id: colorId } }
+          }))
         },
         images: {
           create: images.map((url: string) => ({ url }))

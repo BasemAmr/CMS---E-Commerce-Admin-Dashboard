@@ -74,10 +74,16 @@ export async function PATCH(
         isFeatured,
         isArchived,
         sizes: {
-          set: sizeIds.map((id: string) => ({ id }))
+          deleteMany: {},
+          create: sizeIds.map((sizeId: string) => ({
+            size: { connect: { id: sizeId } }
+          }))
         },
         colors: {
-          set: colorIds.map((id: string) => ({ id }))
+          deleteMany: {},
+          create: colorIds.map((colorId: string) => ({
+            color: { connect: { id: colorId } }
+          }))
         },
         images: {
           deleteMany: {},

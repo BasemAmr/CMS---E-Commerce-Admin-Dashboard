@@ -49,13 +49,14 @@ model Category {
 }
 
 model Size {
-  id        String   @id @default(uuid())
+  id        String           @id @default(uuid())
   storeId   String
   name      String
   value     String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  store     Store    @relation("StoreToSize", fields: [storeId], references: [id])
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  store     Store            @relation("StoreToSize", fields: [storeId], references: [id])
+  products  ProductToSize[]  @relation("ProductToSize")
 
   @@index([storeId])
 }
@@ -68,25 +69,27 @@ model Color {
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
   store          Store            @relation("StoreToColor", fields: [storeId], references: [id])
-  ColorToProduct ColorToProduct[]
+  products       ColorToProduct[] @relation("ProductToColor")
 
   @@index([storeId])
 }
 
 model Product {
-  id         String      @id @default(uuid())
+  id         String             @id @default(uuid())
   name       String
   price      Float
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
+  createdAt  DateTime           @default(now())
+  updatedAt  DateTime           @updatedAt
   storeId    String
   categoryId String
-  isArchived Boolean     @default(false)
-  isFeatured Boolean     @default(false)
+  isArchived Boolean            @default(false)
+  isFeatured Boolean            @default(false)
   images     Image[]
   orderItems OrderItem[]
-  category   Category    @relation("CategoryToProduct", fields: [categoryId], references: [id])
-  store      Store       @relation("StoreToProduct", fields: [storeId], references: [id])
+  sizes      ProductToSize[]    @relation("ProductToSize")
+  colors     ColorToProduct[]   @relation("ProductToColor")
+  category   Category           @relation("CategoryToProduct", fields: [categoryId], references: [id])
+  store      Store              @relation("StoreToProduct", fields: [storeId], references: [id])
 
   @@index([storeId])
   @@index([categoryId])
@@ -129,20 +132,21 @@ model OrderItem {
 }
 
 model ColorToProduct {
-  A     String
-  B     String
-  Color Color  @relation(fields: [A], references: [id], onDelete: Cascade)
+  productId String
+  colorId   String
+  product   Product @relation("ProductToColor", fields: [productId], references: [id], onDelete: Cascade)
+  color     Color   @relation("ProductToColor", fields: [colorId], references: [id], onDelete: Cascade)
 
-  @@id([A, B], map: "_ColorToProduct_AB_pkey")
-  @@index([B], map: "_ColorToProduct_B_index")
-  @@map("_ColorToProduct")
+  @@id([productId, colorId])
+  @@index([colorId])
 }
 
 model ProductToSize {
-  A String
-  B String
+  productId String
+  sizeId    String
+  product   Product @relation("ProductToSize", fields: [productId], references: [id], onDelete: Cascade)
+  size      Size    @relation("ProductToSize", fields: [sizeId], references: [id], onDelete: Cascade)
 
-  @@id([A, B], map: "_ProductToSize_AB_pkey")
-  @@index([B], map: "_ProductToSize_B_index")
-  @@map("_ProductToSize")
+  @@id([productId, sizeId])
+  @@index([sizeId])
 }
