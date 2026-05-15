@@ -1,6 +1,7 @@
 import prismadb from "@/lib/prismadb";
 import { auth } from '@clerk/nextjs/server';
 import { NextRequest, NextResponse } from "next/server";
+import { syncProductToAlgolia, deleteProductFromAlgolia } from "@/lib/algolia";
 
 // Get a product by ID
 export async function GET(
@@ -82,8 +83,17 @@ export async function PATCH(
           deleteMany: {},
           create: images.map((url: string) => ({ url }))
         }
+      },
+      include: {
+        sizes: true,
+        colors: true,
+        images: true,
+        category: true
       }
     });
+
+    // Sync updated product to Algolia for immediate search availability.
+    syncProductToAlgolia(product);
 
     return NextResponse.json(product, { status: 200 });
   } catch (error) {
@@ -123,6 +133,9 @@ export async function DELETE(
     const product = await prismadb.product.delete({
       where: { id: productId }
     });
+
+    // Remove product from Algolia search index immediately after DB deletion.
+    deleteProductFromAlgolia(productId);
 
     return NextResponse.json(product, { status: 200 });
   } catch (error) {

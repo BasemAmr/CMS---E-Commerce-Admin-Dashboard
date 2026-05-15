@@ -1,6 +1,7 @@
 import prismadb from "@/lib/prismadb";
 import { auth } from '@clerk/nextjs/server';
 import { NextRequest, NextResponse } from "next/server";
+import { syncProductToAlgolia } from "@/lib/algolia";
 
 // Create a new product
 export async function POST(
@@ -49,8 +50,19 @@ export async function POST(
         images: {
           create: images.map((url: string) => ({ url }))
         }
+      },
+      include: {
+        sizes: true,
+        colors: true,
+        images: true,
+        category: true
       }
     });
+
+    // Sync to Algolia after successful DB commit.
+    // Non-blocking: errors logged but don't fail the response.
+    // This allows real-time search updates in the frontend shop within milliseconds.
+    syncProductToAlgolia(product);
 
     return NextResponse.json(product, { status: 201 });
   } catch (error) {

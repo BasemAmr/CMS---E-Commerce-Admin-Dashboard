@@ -10,25 +10,25 @@ model Store {
   id         String      @id @default(uuid())
   name       String
   userId     String
-  billboards Billboard[] @relation("StoreToBillboard")
-  categories Category[]  @relation("StoreToCategory") // تم تغيير الاسم هنا
-  sizes      Size[]      @relation("StoreToSize")
-  colors     Color[]     @relation("StoreToColor")
-  products   Product[]   @relation("StoreToProduct")  // تم تغيير الاسم هنا
-  orders     Order[]     @relation("StoreToOrder")
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
+  billboards Billboard[] @relation("StoreToBillboard")
+  categories Category[]  @relation("StoreToCategory")
+  colors     Color[]     @relation("StoreToColor")
+  orders     Order[]     @relation("StoreToOrder")
+  products   Product[]   @relation("StoreToProduct")
+  sizes      Size[]      @relation("StoreToSize")
 }
 
 model Billboard {
   id         String     @id @default(uuid())
   storeId    String
-  store      Store      @relation("StoreToBillboard", fields: [storeId], references: [id])
   label      String
   imageUrl   String
-  categories Category[]
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
+  store      Store      @relation("StoreToBillboard", fields: [storeId], references: [id])
+  categories Category[]
 
   @@index([storeId])
 }
@@ -36,40 +36,39 @@ model Billboard {
 model Category {
   id          String    @id @default(uuid())
   name        String
-  storeId     String
-  store       Store     @relation("StoreToCategory", fields: [storeId], references: [id]) // تم التحديث هنا
-  billboardId String
-  billboard   Billboard @relation(fields: [billboardId], references: [id])
-  products    Product[] @relation("CategoryToProduct")
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+  storeId     String
+  billboardId String
+  billboard   Billboard @relation(fields: [billboardId], references: [id])
+  store       Store     @relation("StoreToCategory", fields: [storeId], references: [id])
+  products    Product[] @relation("CategoryToProduct")
 
   @@index([storeId])
   @@index([billboardId])
 }
 
 model Size {
-  id        String    @id @default(uuid())
+  id        String   @id @default(uuid())
   storeId   String
-  store     Store     @relation("StoreToSize", fields: [storeId], references: [id])
   name      String
   value     String
-  products  Product[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  store     Store    @relation("StoreToSize", fields: [storeId], references: [id])
 
   @@index([storeId])
 }
 
 model Color {
-  id        String    @id @default(uuid())
-  storeId   String
-  store     Store     @relation("StoreToColor", fields: [storeId], references: [id])
-  name      String
-  value     String
-  products  Product[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id             String           @id @default(uuid())
+  storeId        String
+  name           String
+  value          String
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  store          Store            @relation("StoreToColor", fields: [storeId], references: [id])
+  ColorToProduct ColorToProduct[]
 
   @@index([storeId])
 }
@@ -78,18 +77,16 @@ model Product {
   id         String      @id @default(uuid())
   name       String
   price      Float
-  storeId    String
-  store      Store       @relation("StoreToProduct", fields: [storeId], references: [id]) // تم التحديث هنا
-  categoryId String
-  category   Category    @relation("CategoryToProduct", fields: [categoryId], references: [id])
-  images     Image[]
-  orderItems OrderItem[]
-  sizes      Size[]
-  colors     Color[]
-  isFeatured Boolean     @default(false)
-  isArchived Boolean     @default(false)
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
+  storeId    String
+  categoryId String
+  isArchived Boolean     @default(false)
+  isFeatured Boolean     @default(false)
+  images     Image[]
+  orderItems OrderItem[]
+  category   Category    @relation("CategoryToProduct", fields: [categoryId], references: [id])
+  store      Store       @relation("StoreToProduct", fields: [storeId], references: [id])
 
   @@index([storeId])
   @@index([categoryId])
@@ -98,10 +95,10 @@ model Product {
 model Image {
   id        String   @id @default(uuid())
   productId String
-  product   Product  @relation(fields: [productId], references: [id])
   url       String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  product   Product  @relation(fields: [productId], references: [id])
 
   @@index([productId])
 }
@@ -109,24 +106,43 @@ model Image {
 model Order {
   id         String      @id @default(uuid())
   storeId    String
-  store      Store       @relation("StoreToOrder", fields: [storeId], references: [id])
   isPaid     Boolean     @default(false)
   phone      String      @default("")
   address    String      @default("")
-  orderItems OrderItem[]
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
+  store      Store       @relation("StoreToOrder", fields: [storeId], references: [id])
+  orderItems OrderItem[]
 
   @@index([storeId])
 }
 
 model OrderItem {
-  id        String   @id @default(uuid())
+  id        String  @id @default(uuid())
   orderId   String
-  order     Order    @relation(fields: [orderId], references: [id])
   productId String
-  product   Product  @relation(fields: [productId], references: [id])
+  order     Order   @relation(fields: [orderId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
 
   @@index([orderId])
   @@index([productId])
+}
+
+model ColorToProduct {
+  A     String
+  B     String
+  Color Color  @relation(fields: [A], references: [id], onDelete: Cascade)
+
+  @@id([A, B], map: "_ColorToProduct_AB_pkey")
+  @@index([B], map: "_ColorToProduct_B_index")
+  @@map("_ColorToProduct")
+}
+
+model ProductToSize {
+  A String
+  B String
+
+  @@id([A, B], map: "_ProductToSize_AB_pkey")
+  @@index([B], map: "_ProductToSize_B_index")
+  @@map("_ProductToSize")
 }
