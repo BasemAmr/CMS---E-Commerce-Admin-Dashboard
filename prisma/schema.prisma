@@ -132,8 +132,8 @@ model OrderItem {
 }
 
 model ColorToProduct {
-  productId String
-  colorId   String
+  productId String @map("A")
+  colorId   String @map("B")
   product   Product @relation("ProductToColor", fields: [productId], references: [id], onDelete: Cascade)
   color     Color   @relation("ProductToColor", fields: [colorId], references: [id], onDelete: Cascade)
 
@@ -143,8 +143,8 @@ model ColorToProduct {
 }
 
 model ProductToSize {
-  productId String
-  sizeId    String
+  productId String @map("A")
+  sizeId    String @map("B")
   product   Product @relation("ProductToSize", fields: [productId], references: [id], onDelete: Cascade)
   size      Size    @relation("ProductToSize", fields: [sizeId], references: [id], onDelete: Cascade)
 
